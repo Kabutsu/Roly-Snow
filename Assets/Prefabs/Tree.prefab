@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 58799554388979568}
   m_Layer: 0
   m_Name: Tree
-  m_TagString: Untagged
+  m_TagString: Tree
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -68,7 +68,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2534704ea916bf84d8d32e8e525ecb7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 0}
 --- !u!212 &212285844267288588
 SpriteRenderer:
   m_ObjectHideFlags: 1

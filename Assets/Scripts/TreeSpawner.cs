@@ -4,39 +4,85 @@ using UnityEngine;
 
 public class TreeSpawner : MonoBehaviour {
 
-    private float minSpawnRate = 3;
-    private float maxSpawnRate = 6;
-    private float frequency = 3;
+    private float minSpawnRate = 1;
+    private float maxSpawnRate = 1;
     private int treesSpawned = 0;
     private int i;
 
+    private float minFrequency = 0.25f;
+    private float maxFrequency = 1f;
+
     public GameObject treePrefab;
     private float randomiser;
+    private float ripple = 0.5f;
 
-    private int screenWidth;
+    private float screenMin;
+    private float screenMax;
     private Transform trans;
     public GameController controller;
 
+    private bool paused = false;
+
     private void Awake()
     {
-        screenWidth = Screen.width;
+        float vertExtent = Camera.main.GetComponent<Camera>().orthographicSize;
+        float horzExtent = vertExtent * Screen.width / Screen.height;
+        
+        screenMin = horzExtent - 40f / 2.0f;
+        screenMax = 40f / 2.0f - horzExtent;
+
         trans = gameObject.transform;
     }
 
     // Use this for initialization
     void Start () {
         randomiser = Random.Range(1f, 100f);
+        Invoke("SpawnTrees", 1f);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        float noise = Mathf.PerlinNoise(randomiser, frequency * Time.time);
+        
+	}
+
+    private void SpawnTrees()
+    {
+        float noise = Mathf.PerlinNoise(randomiser, ripple * Time.time);
+        float delay = Mathf.Lerp(minFrequency, maxFrequency, noise);
+
         treesSpawned = Mathf.RoundToInt(Mathf.Lerp(minSpawnRate, maxSpawnRate, noise));
 
-        for(i = 0; i <= treesSpawned; i++)
+        for (i = 0; i <= treesSpawned; i++)
         {
-            GameObject newTree = Instantiate(treePrefab, new Vector3(Random.Range(0, screenWidth), trans.position.y), trans.rotation);
+            GameObject newTree = Instantiate(treePrefab, new Vector3(Random.Range(screenMin, screenMax), trans.position.y), trans.rotation);
             controller.AddTree(newTree.GetComponent<TreeController>());
         }
-	}
+
+        if(!paused) Invoke("SpawnTrees", delay);
+    }
+
+    public void PauseTreesSpawningFor(float seconds)
+    {
+        paused = true;
+        StartCoroutine(Resume(seconds));
+    }
+
+    private IEnumerator Resume(float inSeconds)
+    {
+        yield return new WaitForSeconds(inSeconds);
+        paused = false;
+        SpawnTrees();
+    }
+
+    public void IncreaseSpawnRate()
+    {
+        maxSpawnRate++;
+        maxFrequency -= 0.1f;
+    }
+
+    public void DecreaseSpawnRate()
+    {
+        maxSpawnRate--;
+        maxFrequency += 0.1f;
+    }
 }
