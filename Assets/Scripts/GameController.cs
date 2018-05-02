@@ -9,17 +9,17 @@ public class GameController : MonoBehaviour {
     public SnowballController snowball;
 
     [SerializeField]
-    private int[] levelBoundaries = new int[3];
+    private int[] levelBoundaries = new int[5];
     [SerializeField]
-    private float[] treeSpeedValues = new float[3];
+    private float[] treeSpeedValues = new float[5];
     [SerializeField]
-    private float[] snowballSpeedValues = new float[3];
+    private float[] snowballSpeedValues = new float[5];
     [SerializeField]
-    private float[] snowballAccelerationValues = new float[3];
+    private float[] snowballAccelerationValues = new float[5];
     [SerializeField]
-    private float[] snowballMomentumValues = new float[3];
+    private float[] snowballMomentumValues = new float[5];
     [SerializeField]
-    private float[] snowballSizeValues = new float[3];
+    private float[] snowballSizeValues = new float[5];
     
     private int currentLevel = -1;
 
@@ -46,7 +46,7 @@ public class GameController : MonoBehaviour {
         score += (scoreSpeed * Time.deltaTime);
         boundaryScore += (scoreSpeed * Time.deltaTime);
 
-        if (!gameOver && currentLevel < 2 && boundaryScore > levelBoundaries[currentLevel]) IncrementLevel();
+        if (!gameOver && currentLevel < 4 && boundaryScore > levelBoundaries[currentLevel]) IncrementLevel();
 
         scoreText.text = Mathf.RoundToInt(score).ToString();
     }
@@ -100,12 +100,16 @@ public class GameController : MonoBehaviour {
         snowball.SetMomentum(snowballMomentumValues[currentLevel]);
         snowball.SetSize(snowballSizeValues[currentLevel]);
 
-        if (slowDown)
+        if (currentLevel < 2)
         {
-            spawner.DecreaseSpawnRate();
-        } else
-        {
-            spawner.IncreaseSpawnRate();
+            if (slowDown)
+            {
+                spawner.DecreaseSpawnRate();
+            }
+            else
+            {
+                spawner.IncreaseSpawnRate();
+            }
         }
     }
 

@@ -52,10 +52,10 @@ public class SnowballController : MonoBehaviour {
         {
             if(velocity > 0)
             {
-                velocity = (velocity - acceleration / momentum);
+                velocity = ((velocity - acceleration / momentum) < 0 ? 0 : (velocity - acceleration / momentum));
             } else
             {
-                velocity = (velocity + acceleration / momentum);
+                velocity = ((velocity + acceleration / momentum) > 0 ? 0 : (velocity + acceleration / momentum));
             }
         }
     }
