@@ -22,6 +22,7 @@ public class TreeSpawner : MonoBehaviour {
     public GameController controller;
 
     private bool paused = false;
+    private bool gameOver = false;
 
     private void Awake()
     {
@@ -37,7 +38,7 @@ public class TreeSpawner : MonoBehaviour {
     // Use this for initialization
     void Start () {
         randomiser = Random.Range(1f, 100f);
-        Invoke("SpawnTrees", 1f);
+        SpawnTrees();
 	}
 	
 	// Update is called once per frame
@@ -54,8 +55,11 @@ public class TreeSpawner : MonoBehaviour {
 
         for (i = 0; i <= treesSpawned; i++)
         {
-            GameObject newTree = Instantiate(treePrefab, new Vector3(Random.Range(screenMin, screenMax), trans.position.y), trans.rotation);
-            controller.AddTree(newTree.GetComponent<TreeController>());
+            if (!paused)
+            {
+                GameObject newTree = Instantiate(treePrefab, new Vector3(Random.Range(screenMin, screenMax), trans.position.y), trans.rotation);
+                controller.AddTree(newTree.GetComponent<TreeController>());
+            }
         }
 
         if(!paused) Invoke("SpawnTrees", delay);
@@ -70,8 +74,11 @@ public class TreeSpawner : MonoBehaviour {
     private IEnumerator Resume(float inSeconds)
     {
         yield return new WaitForSeconds(inSeconds);
-        paused = false;
-        SpawnTrees();
+        if (!gameOver)
+        {
+            paused = false;
+            SpawnTrees();
+        }
     }
 
     public void IncreaseSpawnRate()
@@ -84,5 +91,11 @@ public class TreeSpawner : MonoBehaviour {
     {
         maxSpawnRate--;
         maxFrequency += 0.1f;
+    }
+
+    public void Stop()
+    {
+        gameOver = true;
+        paused = true;
     }
 }

@@ -6,7 +6,7 @@ public class SnowballController : MonoBehaviour {
 
     private float velocity = 0;
     private float maxSpeed = 4f;
-    private float acceleration = 0.75f;
+    private float acceleration = 0.25f;
     private float momentum = 8f;
     
     [SerializeField]
@@ -14,8 +14,13 @@ public class SnowballController : MonoBehaviour {
 
     public GameController controller;
 
-	// Use this for initialization
-	void Start () {
+    public GameObject snowflake;
+    private const int MIN_SNOWFLAKES = 4;
+    private const int MAX_SNOWFLAKES = 8;
+    private float previousVelocity = 0f;
+    
+    // Use this for initialization
+    void Start () {
         StartCoroutine(MoveDownScreen());
 	}
 	
@@ -52,12 +57,22 @@ public class SnowballController : MonoBehaviour {
         {
             if(velocity > 0)
             {
-                velocity = ((velocity - acceleration / momentum) < 0 ? 0 : (velocity - acceleration / momentum));
+                velocity = ( ((velocity - acceleration / momentum) < 0) ? 0 : (velocity - acceleration / momentum));
             } else
             {
-                velocity = ((velocity + acceleration / momentum) > 0 ? 0 : (velocity + acceleration / momentum));
+                velocity = ( ((velocity + acceleration / momentum) > 0) ? 0 : (velocity + acceleration / momentum));
             }
         }
+
+        if(previousVelocity > 0 && velocity < 0)
+        {
+            
+        } else if (previousVelocity < 0 && velocity > 0)
+        {
+            
+        }
+
+        previousVelocity = velocity;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -100,7 +115,7 @@ public class SnowballController : MonoBehaviour {
 
     private IEnumerator MoveDownScreen()
     {
-        for (float t = 0; t<1; t+= Time.deltaTime/4f)
+        for (float t = 0; t<1; t+= Time.deltaTime/3f)
         {
             gameObject.transform.position = new Vector3(gameObject.transform.position.x, Mathf.Lerp(4.05f, 2f, t));
             yield return null;
@@ -108,5 +123,25 @@ public class SnowballController : MonoBehaviour {
         
         gameObject.transform.position = new Vector3(gameObject.transform.position.x, 2f);
         yield return null;
+    }
+
+    private IEnumerator BrushSnow(float leftmostStart, float rightmostStart, float minAngle, float maxAngle)
+    {
+        int noSnowflakes = Random.Range(MIN_SNOWFLAKES, MAX_SNOWFLAKES + 1);
+
+        for(int i = 0; i < noSnowflakes; i++)
+        {
+            GameObject newSnowflake = Instantiate(snowflake, new Vector3(Random.Range(gameObject.transform.position.x + leftmostStart, gameObject.transform.position.x + rightmostStart), gameObject.transform.position.y), gameObject.transform.rotation);
+            float scale = Random.Range(0.33f, 1f);
+            newSnowflake.transform.localScale = new Vector3(scale, scale);
+            float angle = Random.Range(minAngle, maxAngle);
+            StartCoroutine(MoveSnow(angle, 1.33f - scale));
+            yield return null;
+        }
+    }
+
+    private IEnumerator MoveSnow(float angle, float lifetime)
+    {
+
     }
 }

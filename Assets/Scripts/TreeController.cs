@@ -6,7 +6,7 @@ public class TreeController : MonoBehaviour {
 
     private float speed = 0f;
     private float maxSpeed = 2.5f;
-    private float acceleration = 0.025f;
+    private float acceleration = 0.1f;
 
     private float screenHeight;
     private GameController controller;
@@ -20,6 +20,7 @@ public class TreeController : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+        speed = maxSpeed;
         controller = GameObject.Find("Game Controller").GetComponent<GameController>();
     }
 	
@@ -41,5 +42,11 @@ public class TreeController : MonoBehaviour {
     public void SetMaxSpeed(float to)
     {
         maxSpeed = to;
+    }
+
+    public void Stop()
+    {
+        speed = 0;
+        acceleration = 0;
     }
 }
