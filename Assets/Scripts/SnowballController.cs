@@ -125,23 +125,23 @@ public class SnowballController : MonoBehaviour {
         yield return null;
     }
 
-    private IEnumerator BrushSnow(float leftmostStart, float rightmostStart, float minAngle, float maxAngle)
-    {
-        int noSnowflakes = Random.Range(MIN_SNOWFLAKES, MAX_SNOWFLAKES + 1);
+    //private IEnumerator BrushSnow(float leftmostStart, float rightmostStart, float minAngle, float maxAngle)
+    //{
+    //    int noSnowflakes = Random.Range(MIN_SNOWFLAKES, MAX_SNOWFLAKES + 1);
 
-        for(int i = 0; i < noSnowflakes; i++)
-        {
-            GameObject newSnowflake = Instantiate(snowflake, new Vector3(Random.Range(gameObject.transform.position.x + leftmostStart, gameObject.transform.position.x + rightmostStart), gameObject.transform.position.y), gameObject.transform.rotation);
-            float scale = Random.Range(0.33f, 1f);
-            newSnowflake.transform.localScale = new Vector3(scale, scale);
-            float angle = Random.Range(minAngle, maxAngle);
-            StartCoroutine(MoveSnow(angle, 1.33f - scale));
-            yield return null;
-        }
-    }
+    //    for(int i = 0; i < noSnowflakes; i++)
+    //    {
+    //        GameObject newSnowflake = Instantiate(snowflake, new Vector3(Random.Range(gameObject.transform.position.x + leftmostStart, gameObject.transform.position.x + rightmostStart), gameObject.transform.position.y), gameObject.transform.rotation);
+    //        float scale = Random.Range(0.33f, 1f);
+    //        newSnowflake.transform.localScale = new Vector3(scale, scale);
+    //        float angle = Random.Range(minAngle, maxAngle);
+    //        StartCoroutine(MoveSnow(angle, 1.33f - scale));
+    //        yield return null;
+    //    }
+    //}
 
-    private IEnumerator MoveSnow(float angle, float lifetime)
-    {
+    //private IEnumerator MoveSnow(float angle, float lifetime)
+    //{
 
-    }
+    //}
 }
