@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour {
     private List<TreeController> trees;
     public TreeSpawner spawner;
     public SnowballController snowball;
+    public PathSpawner paths;
 
     [SerializeField]
     private int[] levelBoundaries = new int[5];
@@ -60,6 +61,12 @@ public class GameController : MonoBehaviour {
             if (!gameOver && currentLevel < 4 && boundaryScore > levelBoundaries[currentLevel]) IncrementLevel();
 
             scoreText.text = Mathf.RoundToInt(score).ToString();
+
+            if (scoreText.text == "30")
+            {
+                paths.SpawnPath();
+                score++;
+            }
         }
     }
 
@@ -97,7 +104,6 @@ public class GameController : MonoBehaviour {
             GameOver();
         } else
         {
-            spawner.PauseTreesSpawningFor(currentLevel);
             SetLevels(true);
         }
     }

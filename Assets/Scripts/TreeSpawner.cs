@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class TreeSpawner : MonoBehaviour {
 
@@ -22,15 +23,16 @@ public class TreeSpawner : MonoBehaviour {
     public GameController controller;
 
     private bool paused = false;
-    private bool gameOver = false;
+
+    private GameObject lastTreePlaced;
 
     private void Awake()
     {
         float vertExtent = Camera.main.GetComponent<Camera>().orthographicSize;
         float horzExtent = vertExtent * Screen.width / Screen.height;
         
-        screenMin = horzExtent - 40f / 2.0f;
-        screenMax = 40f / 2.0f - horzExtent;
+        screenMin = horzExtent - 35.275f / 2.0f;
+        screenMax = 35.275f / 2.0f - horzExtent;
 
         trans = gameObject.transform;
     }
@@ -46,6 +48,13 @@ public class TreeSpawner : MonoBehaviour {
         
 	}
 
+    private void AddTree(float xPos)
+    {
+        GameObject newTree = Instantiate(treePrefab, new Vector3(xPos, trans.position.y), trans.rotation);
+        controller.AddTree(newTree.GetComponent<TreeController>());
+        lastTreePlaced = newTree;
+    }
+
     private void SpawnTrees()
     {
         float noise = Mathf.PerlinNoise(randomiser, ripple * Time.time);
@@ -57,8 +66,7 @@ public class TreeSpawner : MonoBehaviour {
         {
             if (!paused)
             {
-                GameObject newTree = Instantiate(treePrefab, new Vector3(Random.Range(screenMin, screenMax), trans.position.y), trans.rotation);
-                controller.AddTree(newTree.GetComponent<TreeController>());
+                AddTree(Random.Range(screenMin, screenMax));
             }
         }
 
@@ -74,11 +82,8 @@ public class TreeSpawner : MonoBehaviour {
     private IEnumerator Resume(float inSeconds)
     {
         yield return new WaitForSeconds(inSeconds);
-        if (!gameOver)
-        {
-            paused = false;
-            SpawnTrees();
-        }
+
+        SpawnTrees();
     }
 
     public void IncreaseSpawnRate()
@@ -95,7 +100,48 @@ public class TreeSpawner : MonoBehaviour {
 
     public void Stop()
     {
-        gameOver = true;
         paused = true;
+    }
+
+    public void Resume()
+    {
+        paused = false;
+        SpawnTrees();
+    }
+
+    public void SpawnPath(List<Dictionary<float, float>> pathValues)
+    {
+        Stop();
+        StartCoroutine(PlacePath(pathValues));
+    }
+
+    private IEnumerator PlacePath(List<Dictionary<float, float>> pathValues)
+    {
+        yield return new WaitForSeconds(1f);
+
+        foreach (Dictionary<float, float> pathValue in pathValues)
+        {
+            float distanceFromLeft = pathValue.Keys.ToArray().First();
+            float width = pathValue.Values.ToArray().First();
+
+            float horoTreeSplit = Random.Range(0.3f, 0.5f);
+            float vertTreeSplit = Random.Range(0.55f, 0.65f);
+
+            for (float i = screenMin; i <= (screenMin + distanceFromLeft); i += horoTreeSplit)
+                AddTree(i);
+
+            for (float i = (screenMin + distanceFromLeft + width); i <= screenMax + horoTreeSplit; i += horoTreeSplit)
+                AddTree(i);
+
+            yield return new WaitUntil(() => LastTreeDistance() >= vertTreeSplit);
+        }
+
+        yield return new WaitForSeconds(1f);
+        Resume();
+    }
+
+    private float LastTreeDistance()
+    {
+        return lastTreePlaced.transform.position.y - gameObject.transform.position.y;
     }
 }
