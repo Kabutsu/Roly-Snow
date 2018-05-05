@@ -61,12 +61,6 @@ public class GameController : MonoBehaviour {
             if (!gameOver && currentLevel < 4 && boundaryScore > levelBoundaries[currentLevel]) IncrementLevel();
 
             scoreText.text = Mathf.RoundToInt(score).ToString();
-
-            if (Convert.ToInt32(scoreText.text) % 80 == 30)
-            {
-                paths.SpawnPath();
-                score++;
-            }
         }
     }
 
@@ -155,7 +149,7 @@ public class GameController : MonoBehaviour {
 
     private IEnumerator StartAnimation(GameObject snowballObj)
     {
-        for (float t = 0; t < 1; t += Time.deltaTime / 3f)
+        for (float t = 0; t < 1; t += Time.deltaTime / 2f)
         {
             titleText.color = new Color(1, 1, 1, 1 - t);
             snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
@@ -174,7 +168,7 @@ public class GameController : MonoBehaviour {
 
         yield return null;
 
-        for(float t = 0; t < 1; t += Time.deltaTime / 3f)
+        for(float t = 0; t < 1; t += Time.deltaTime / 2f)
         {
             scoreTitleText.color = new Color(0, 0, 0, t);
             scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);

@@ -117,7 +117,7 @@ public class TreeSpawner : MonoBehaviour {
 
     private IEnumerator PlacePath(List<Dictionary<float, float>> pathValues)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
 
         foreach (Dictionary<float, float> pathValue in pathValues)
         {
