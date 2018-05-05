@@ -35,6 +35,9 @@ public class GameController : MonoBehaviour {
     public UnityEngine.UI.Text scoreTitleText;
     public UnityEngine.UI.Text scoreText;
 
+    public GameObject startButton;
+    public GameObject restartButton;
+
     private bool gameOver = false;
 
     // Use this for initialization
@@ -46,7 +49,7 @@ public class GameController : MonoBehaviour {
         scoreText.enabled = false;
         gameOver = true;
 
-        GameStart();
+        restartButton.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -138,6 +141,8 @@ public class GameController : MonoBehaviour {
         foreach (TreeController tree in trees) tree.Stop();
         spawner.Stop();
         snowball.enabled = false;
+
+        restartButton.SetActive(true);
     }
 
     public void GameStart()
@@ -149,15 +154,19 @@ public class GameController : MonoBehaviour {
 
     private IEnumerator StartAnimation(GameObject snowballObj)
     {
-        for (float t = 0; t < 1; t += Time.deltaTime / 2f)
+        UnityEngine.UI.Image startButtonImg = startButton.GetComponent<UnityEngine.UI.Image>();
+
+        for (float t = 0; t < 1; t += Time.deltaTime / 2.5f)
         {
             titleText.color = new Color(1, 1, 1, 1 - t);
             snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
-            //snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
+            snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
+            startButtonImg.color = new Color(1, 1, 1, 1-t);
             yield return null;
         }
 
         titleText.enabled = false;
+        startButton.SetActive(false);
 
         scoreTitleText.enabled = true;
         scoreTitleText.color = new Color(0, 0, 0, 0);
@@ -168,7 +177,65 @@ public class GameController : MonoBehaviour {
 
         yield return null;
 
-        for(float t = 0; t < 1; t += Time.deltaTime / 2f)
+        for(float t = 0; t < 1; t += Time.deltaTime / 2.5f)
+        {
+            scoreTitleText.color = new Color(0, 0, 0, t);
+            scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);
+            mainCamera.transform.position = new Vector3(0, Mathf.Lerp(10f, 0f, t), -10);
+            snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t));
+            yield return null;
+        }
+
+        scoreTitleText.color = Color.black;
+        scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, 1);
+
+        gameOver = false;
+        snowball.enabled = true;
+        spawner.enabled = true;
+
+        yield return null;
+    }
+
+    public void RestartGame()
+    {
+        foreach (TreeController tree in trees) RemoveTree(tree);
+
+        Camera.main.transform.position = new Vector3(0, 10, -10);
+        snowball.transform.position = new Vector3(-3.9f, 13.17f, 0f);
+        snowball.transform.localScale = new Vector3(0.25f, 0.25f);
+
+        restartButton.SetActive(false);
+        scoreText.text = "0";
+        score = 0;
+        boundaryScore = 0;
+        IncrementLevel();
+
+        gameOver = false;
+        snowball.enabled = false;
+        spawner.enabled = false;
+
+        StartCoroutine(RestartAnimation(snowball.gameObject));
+    }
+
+    private IEnumerator RestartAnimation(GameObject snowballObj)
+    {
+        for (float t = 0; t < 1; t += Time.deltaTime / 2f)
+        {
+            snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
+            snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
+            yield return null;
+        }
+
+        scoreTitleText.enabled = true;
+        scoreTitleText.color = new Color(0, 0, 0, 0);
+        scoreText.enabled = true;
+        scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, 0);
+
+        Camera mainCamera = Camera.main;
+
+        yield return null;
+
+        for (float t = 0; t < 1; t += Time.deltaTime / 2f)
         {
             scoreTitleText.color = new Color(0, 0, 0, t);
             scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);
