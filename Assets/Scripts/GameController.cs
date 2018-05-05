@@ -62,7 +62,7 @@ public class GameController : MonoBehaviour {
 
             scoreText.text = Mathf.RoundToInt(score).ToString();
 
-            if (scoreText.text == "30")
+            if (Convert.ToInt32(scoreText.text) % 80 == 30)
             {
                 paths.SpawnPath();
                 score++;

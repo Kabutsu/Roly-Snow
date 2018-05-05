@@ -20,6 +20,8 @@ public class PathSpawner : MonoBehaviour {
 
     private float screenMin;
     private float screenMax;
+    private float treeMin;
+    private float treeMax;
 
     public TreeSpawner spawner;
 
@@ -31,6 +33,9 @@ public class PathSpawner : MonoBehaviour {
         float horzExtent = vertExtent * Screen.width / Screen.height;
         screenMin = horzExtent - 35.275f / 2.0f;
         screenMax = 35.275f / 2.0f - horzExtent;
+
+        treeMin = screenMin + ((3 * spawner.treePrefab.transform.lossyScale.x) / 2);
+        treeMax = screenMax - ((3 * spawner.treePrefab.transform.lossyScale.x) / 2);
 
         pathValues = new List<Dictionary<float, float>>();
     }
@@ -44,10 +49,10 @@ public class PathSpawner : MonoBehaviour {
     {
         pathValues = new List<Dictionary<float, float>>();
 
-        float minCentrePoint = screenMin + (MAX_PATH_WIDTH / 2);
-        float maxCentrePoint = screenMax - (MAX_PATH_WIDTH / 2);
+        float minCentreStart = -(MAX_PATH_WIDTH / 2);
+        float maxCentreStart = (MAX_PATH_WIDTH / 2);
 
-        lastCentrePoint = Random.Range(minCentrePoint, maxCentrePoint);
+        lastCentrePoint = Random.Range(minCentreStart, maxCentreStart);
         float pathLength = Random.Range(MIN_PATH_LENGTH, MAX_PATH_LENGTH);
 
         for(float yPos = 0f; yPos <= pathLength; yPos += 0.65f)
@@ -55,35 +60,20 @@ public class PathSpawner : MonoBehaviour {
             float noise = Mathf.PerlinNoise(randomiser, perlinFrequency * Time.time);
 
             float width = Mathf.Lerp(MIN_PATH_WIDTH, MAX_PATH_WIDTH, noise);
-            float newCentrePoint;
 
-            do
-            {
-                newCentrePoint = Mathf.Lerp(lastCentrePoint, (Random.Range(0, 2) == 0 ? minCentrePoint : maxCentrePoint), noise);
-            }
-            while (Impossible(newCentrePoint, lastCentrePoint));
-
-            lastCentrePoint = newCentrePoint;
+            lastCentrePoint = Mathf.Lerp(lastCentrePoint, (Random.Range(0, 2) == 0 ? OuterBound(lastCentrePoint + (MIN_PATH_WIDTH/2), width) : OuterBound(lastCentrePoint - (MIN_PATH_WIDTH/2), width)), noise);
             
             pathValues.Add(new Dictionary<float, float>() { { (lastCentrePoint - (width / 2)) + screenMax, width } });
-
-            Debug.Log("Centre:= " + lastCentrePoint + ", Width:= " + width + ", DistanceFromLeft:= " + pathValues.Last().Keys.ToArray().First());
         }
 
         spawner.SpawnPath(pathValues);
     }
 
-    private bool Impossible(float proposedCentre, float lastCentre)
+    private float OuterBound(float centre, float width)
     {
-        if (proposedCentre > lastCentre)
-        {
-            if (proposedCentre - lastCentre > MIN_PATH_WIDTH / 2f) return true;
-        }
-        else if (proposedCentre < lastCentre)
-        {
-            if (lastCentre - proposedCentre > MIN_PATH_WIDTH / 2f) return true;
-        }
+        if (centre > (treeMax - (width / 2))) return treeMax - (width / 2);
+        if (centre < (treeMin + (width / 2))) return treeMin + (width / 2);
 
-        return false;
+        return centre;
     }
 }
