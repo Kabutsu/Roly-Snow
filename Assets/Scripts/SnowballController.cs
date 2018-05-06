@@ -113,9 +113,10 @@ public class SnowballController : MonoBehaviour {
         yield return null;
     }
 
-    private IEnumerator MoveDownScreen()
+    public IEnumerator MoveDownScreen()
     {
-        for (float t = 0; t<1; t+= Time.deltaTime/3f)
+        velocity = 0f;
+        for (float t = 0; t<1; t+= Time.deltaTime / 1.75f)
         {
             gameObject.transform.position = new Vector3(gameObject.transform.position.x, Mathf.Lerp(4.05f, 2f, t));
             yield return null;
