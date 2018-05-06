@@ -156,7 +156,7 @@ public class GameController : MonoBehaviour {
     {
         UnityEngine.UI.Image startButtonImg = startButton.GetComponent<UnityEngine.UI.Image>();
 
-        for (float t = 0; t < 1; t += Time.deltaTime / 2.5f)
+        for (float t = 0; t < 1; t += Time.deltaTime / 2f)
         {
             titleText.color = new Color(1, 1, 1, 1 - t);
             snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
@@ -177,7 +177,7 @@ public class GameController : MonoBehaviour {
 
         yield return null;
 
-        for(float t = 0; t < 1; t += Time.deltaTime / 2.5f)
+        for(float t = 0; t < 1; t += Time.deltaTime / 1.5f)
         {
             scoreTitleText.color = new Color(0, 0, 0, t);
             scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);
@@ -198,7 +198,7 @@ public class GameController : MonoBehaviour {
 
     public void RestartGame()
     {
-        foreach (TreeController tree in trees) RemoveTree(tree);
+        foreach (TreeController tree in trees.ToArray()) RemoveTree(tree);
 
         Camera.main.transform.position = new Vector3(0, 10, -10);
         snowball.transform.position = new Vector3(-3.9f, 13.17f, 0f);
@@ -210,7 +210,9 @@ public class GameController : MonoBehaviour {
         boundaryScore = 0;
         IncrementLevel();
 
-        gameOver = false;
+        scoreText.enabled = false;
+        scoreTitleText.enabled = false;
+
         snowball.enabled = false;
         spawner.enabled = false;
 
@@ -219,7 +221,7 @@ public class GameController : MonoBehaviour {
 
     private IEnumerator RestartAnimation(GameObject snowballObj)
     {
-        for (float t = 0; t < 1; t += Time.deltaTime / 2f)
+        for (float t = 0; t < 1; t += Time.deltaTime / 1.5f)
         {
             snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
             snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
@@ -235,7 +237,7 @@ public class GameController : MonoBehaviour {
 
         yield return null;
 
-        for (float t = 0; t < 1; t += Time.deltaTime / 2f)
+        for (float t = 0; t < 1; t += Time.deltaTime / 1.5f)
         {
             scoreTitleText.color = new Color(0, 0, 0, t);
             scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);
@@ -249,8 +251,13 @@ public class GameController : MonoBehaviour {
 
         gameOver = false;
         snowball.enabled = true;
+        StartCoroutine(snowball.MoveDownScreen());
         spawner.enabled = true;
+        gameOver = false;
 
+        yield return new WaitForSeconds(1f);
+
+        spawner.Resume();
         yield return null;
     }
 }
