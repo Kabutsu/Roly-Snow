@@ -45,14 +45,14 @@ public class SnowballController : MonoBehaviour {
         float moveAmount = velocity * Time.deltaTime;
         transform.Translate(new Vector3(moveAmount, 0));
 
-        if(transform.position.x < -screenLimit)
-        {
-            transform.position = new Vector3(-screenLimit, transform.position.y);
-            velocity = 0;
-        } else if (transform.position.x > screenLimit)
+        if(transform.position.x < -screenLimit-0.25)
         {
             transform.position = new Vector3(screenLimit, transform.position.y);
-            velocity = 0;
+            
+        } else if (transform.position.x > screenLimit+0.25)
+        {
+            transform.position = new Vector3(-screenLimit, transform.position.y);
+          
         } else if (velocity != 0)
         {
             if(velocity > 0)
