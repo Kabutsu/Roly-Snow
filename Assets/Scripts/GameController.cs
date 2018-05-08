@@ -32,12 +32,23 @@ public class GameController : MonoBehaviour {
     private float scoreMaxIncrement;
 
     public UnityEngine.UI.Text titleText;
+
     public UnityEngine.UI.Text scoreTitleText;
     public UnityEngine.UI.Text scoreText;
 
+    public UnityEngine.UI.Text textHints;
+
+    public UnityEngine.UI.Image[] heartImages = new UnityEngine.UI.Image[3];
+    public Sprite[] heartImageTypes = new Sprite[2];
+
     public GameObject startButton;
     public GameObject restartButton;
+    public GameObject aboutButton;
 
+    public GameObject infoPanel;
+    private bool infoOpen = false;
+
+    private int lives = 3;
     private bool gameOver = false;
 
     // Use this for initialization
@@ -47,10 +58,14 @@ public class GameController : MonoBehaviour {
 
         scoreTitleText.enabled = false;
         scoreText.enabled = false;
+        textHints.enabled = false;
+        foreach (UnityEngine.UI.Image heart in heartImages) heart.enabled = false;
+
         gameOver = true;
 
         restartButton.SetActive(false);
-	}
+        infoPanel.SetActive(false);
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -94,9 +109,11 @@ public class GameController : MonoBehaviour {
 
     public void PlayerHitTree()
     {
-        currentLevel--;
+        currentLevel = (currentLevel == 0 ? currentLevel : currentLevel--);
+        lives--;
+        if (lives >= 0 && lives <= 2) heartImages[lives].sprite = heartImageTypes[1];
 
-        if(currentLevel < 0)
+        if (lives == 0)
         {
             GameOver();
         } else
@@ -142,19 +159,101 @@ public class GameController : MonoBehaviour {
         spawner.Stop();
         snowball.enabled = false;
 
+        StartCoroutine(ShowTextHint("Game Over", false));
+
         restartButton.SetActive(true);
+    }
+
+    private IEnumerator ShowTextHint(string message, bool fadeAway)
+    {
+        textHints.enabled = true;
+        textHints.fontSize = 0;
+        textHints.text = message;
+        textHints.color = new Color(1, 1, 1, 0);
+
+        for (float t = 0; t < 1; t += Time.deltaTime / 0.25f)
+        {
+            if (t <= 0.5f) textHints.color = new Color(1, 1, 1, t * 2);
+            textHints.fontSize = Mathf.RoundToInt(42f * t);
+            yield return null;
+        }
+
+        textHints.fontSize = 42;
+        textHints.color = Color.white;
+
+        if (fadeAway)
+        {
+            yield return new WaitForSeconds(3.5f);
+
+            for (float t = 1; t > 0; t -= Time.deltaTime / 1f)
+            {
+                textHints.color = new Color(1, 1, 1, t);
+                yield return null;
+            }
+
+            textHints.enabled = false;
+        }
+
+        yield return null;
+    }
+
+    public void OpenAbout()
+    {
+        if(!infoOpen)
+        {
+            infoOpen = true;
+            StartCoroutine(OpenAboutMenu());
+        }
+    }
+
+    public void CloseAbout()
+    {
+        if(infoOpen)
+        {
+            infoOpen = false;
+            StartCoroutine(CloseAboutMenu());
+        }
+    }
+
+    private IEnumerator OpenAboutMenu()
+    {
+        infoPanel.SetActive(true);
+        RectTransform infoBox = infoPanel.GetComponent<RectTransform>();
+        infoBox.localScale = new Vector3(0, 0);
+
+        for(float t = 0; t <= 1; t += Time.deltaTime / 0.3f)
+        {
+            infoBox.localScale = new Vector3(t * 0.8f, t * 0.2f);
+            yield return null;
+        }
+    }
+
+    private IEnumerator CloseAboutMenu()
+    {
+        RectTransform infoBox = infoPanel.GetComponent<RectTransform>();
+
+        for (float t = 1; t <= 0; t -= Time.deltaTime / 0.3f)
+        {
+            infoBox.localScale = new Vector3(t * 0.8f, t * 0.2f);
+            yield return null;
+        }
+
+        infoPanel.SetActive(false);
+        yield return null;
     }
 
     public void GameStart()
     {
         GameObject snowballObj = snowball.gameObject;
         snowballObj.GetComponent<SpriteRenderer>().enabled = true;
+        if (infoOpen) CloseAbout();
         StartCoroutine(StartAnimation(snowballObj));
     }
 
     private IEnumerator StartAnimation(GameObject snowballObj)
     {
         UnityEngine.UI.Image startButtonImg = startButton.GetComponent<UnityEngine.UI.Image>();
+        UnityEngine.UI.Image aboutButtonImg = aboutButton.GetComponent<UnityEngine.UI.Image>();
 
         for (float t = 0; t < 1; t += Time.deltaTime / 2f)
         {
@@ -162,18 +261,33 @@ public class GameController : MonoBehaviour {
             snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
             snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
             startButtonImg.color = new Color(1, 1, 1, 1-t);
+            aboutButtonImg.color = new Color(1, 1, 1, 1-t);
             yield return null;
         }
 
         titleText.enabled = false;
         startButton.SetActive(false);
+        aboutButton.SetActive(false);
 
         scoreTitleText.enabled = true;
         scoreTitleText.color = new Color(0, 0, 0, 0);
         scoreText.enabled = true;
         scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, 0);
 
+        foreach(UnityEngine.UI.Image heart in heartImages)
+        {
+            heart.enabled = true;
+            heart.color = new Color(0, 0, 0, 0);
+        }
+
         Camera mainCamera = Camera.main;
+
+        SpriteRenderer leftArrow = snowball.leftArrow.GetComponent<SpriteRenderer>();
+        SpriteRenderer rightArrow = snowball.rightArrow.GetComponent<SpriteRenderer>();
+        leftArrow.enabled = true;
+        leftArrow.color = new Color(0.82f, 0.82f, 0.82f, 0f);
+        rightArrow.enabled = true;
+        rightArrow.color = new Color(0.82f, 0.82f, 0.82f, 0f);
 
         yield return null;
 
@@ -181,13 +295,21 @@ public class GameController : MonoBehaviour {
         {
             scoreTitleText.color = new Color(0, 0, 0, t);
             scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);
+            foreach (UnityEngine.UI.Image heart in heartImages) heart.color = new Color(0, 0, 0, t);
             mainCamera.transform.position = new Vector3(0, Mathf.Lerp(10f, 0f, t), -10);
             snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t));
+            if(t <= (1f/3f))
+            {
+                leftArrow.color = new Color(0.82f, 0.82f, 0.82f, t * 3f);
+                rightArrow.color = new Color(0.82f, 0.82f, 0.82f, t * 3f);
+            }
             yield return null;
         }
 
         scoreTitleText.color = Color.black;
         scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, 1);
+
+        foreach (UnityEngine.UI.Image heart in heartImages) heart.color = new Color(0, 0, 0, 1);
 
         gameOver = false;
         snowball.enabled = true;
@@ -198,6 +320,9 @@ public class GameController : MonoBehaviour {
 
     public void RestartGame()
     {
+        lives = 3;
+        currentLevel = -1;
+
         foreach (TreeController tree in trees.ToArray()) RemoveTree(tree);
 
         Camera.main.transform.position = new Vector3(0, 10, -10);
@@ -212,6 +337,12 @@ public class GameController : MonoBehaviour {
 
         scoreText.enabled = false;
         scoreTitleText.enabled = false;
+        textHints.enabled = false;
+        foreach(UnityEngine.UI.Image heart in heartImages)
+        {
+            heart.sprite = heartImageTypes[0];
+            heart.enabled = false;
+        }
 
         snowball.enabled = false;
         spawner.enabled = false;
@@ -233,7 +364,20 @@ public class GameController : MonoBehaviour {
         scoreText.enabled = true;
         scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, 0);
 
+        foreach(UnityEngine.UI.Image heart in heartImages)
+        {
+            heart.enabled = true;
+            heart.color = new Color(0, 0, 0, 0);
+        }
+
         Camera mainCamera = Camera.main;
+
+        SpriteRenderer leftArrow = snowball.leftArrow.GetComponent<SpriteRenderer>();
+        SpriteRenderer rightArrow = snowball.rightArrow.GetComponent<SpriteRenderer>();
+        leftArrow.enabled = true;
+        leftArrow.color = new Color(0.82f, 0.82f, 0.82f, 0f);
+        rightArrow.enabled = true;
+        rightArrow.color = new Color(0.82f, 0.82f, 0.82f, 0f);
 
         yield return null;
 
@@ -241,13 +385,21 @@ public class GameController : MonoBehaviour {
         {
             scoreTitleText.color = new Color(0, 0, 0, t);
             scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);
+            foreach (UnityEngine.UI.Image heart in heartImages) heart.color = new Color(0, 0, 0, t);
             mainCamera.transform.position = new Vector3(0, Mathf.Lerp(10f, 0f, t), -10);
             snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t));
+            if (t <= (1f / 3f))
+            {
+                leftArrow.color = new Color(0.82f, 0.82f, 0.82f, t * 3f);
+                rightArrow.color = new Color(0.82f, 0.82f, 0.82f, t * 3f);
+            }
             yield return null;
         }
 
         scoreTitleText.color = Color.black;
         scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, 1);
+
+        foreach (UnityEngine.UI.Image heart in heartImages) heart.color = new Color(0, 0, 0, 1);
 
         gameOver = false;
         snowball.enabled = true;

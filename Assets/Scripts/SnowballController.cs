@@ -14,6 +14,9 @@ public class SnowballController : MonoBehaviour {
 
     public GameController controller;
 
+    public GameObject leftArrow;
+    public GameObject rightArrow;
+
     public GameObject snowflake;
     private const int MIN_SNOWFLAKES = 4;
     private const int MAX_SNOWFLAKES = 8;
@@ -121,8 +124,20 @@ public class SnowballController : MonoBehaviour {
             gameObject.transform.position = new Vector3(gameObject.transform.position.x, Mathf.Lerp(4.05f, 2f, t));
             yield return null;
         }
-        
+
         gameObject.transform.position = new Vector3(gameObject.transform.position.x, 2f);
+        yield return new WaitForSeconds(0.25f);
+
+        for (float t = 1; t>0; t-= Time.deltaTime / 0.5f)
+        {
+            rightArrow.GetComponent<SpriteRenderer>().color = new Color(0.82f, 0.82f, 0.82f, t);
+            leftArrow.GetComponent<SpriteRenderer>().color = new Color(0.82f, 0.82f, 0.82f, t);
+            yield return null;
+        }
+
+        rightArrow.GetComponent<SpriteRenderer>().enabled = false;
+        leftArrow.GetComponent<SpriteRenderer>().enabled = false;
+
         yield return null;
     }
 
