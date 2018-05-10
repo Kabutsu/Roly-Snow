@@ -22,6 +22,8 @@ public class GameController : MonoBehaviour {
     private float[] snowballMomentumValues = new float[5];
     [SerializeField]
     private float[] snowballSizeValues = new float[5];
+
+    private int[] originalBoundaries;
     
     private int currentLevel = -1;
 
@@ -48,11 +50,16 @@ public class GameController : MonoBehaviour {
     public GameObject infoPanel;
     private bool infoOpen = false;
 
+    public string[] encouragements;
+
     private int lives = 3;
     private bool gameOver = false;
 
     // Use this for initialization
     void Start () {
+        originalBoundaries = new int[levelBoundaries.Length];
+        for (int i = 0; i < levelBoundaries.Length; i++) originalBoundaries[i] = levelBoundaries[i];
+
         trees = new List<TreeController>();
         IncrementLevel();
 
@@ -75,6 +82,37 @@ public class GameController : MonoBehaviour {
 
             score += (scoreSpeed * Time.deltaTime);
             boundaryScore += (scoreSpeed * Time.deltaTime);
+
+            switch (scoreText.text)
+            {
+                case "250":
+                    StartCoroutine(ShowTextHint("You're doing great!", true));
+                    break;
+                case "500":
+                    StartCoroutine(ShowTextHint("You're on fire!", true));
+                    break;
+                case "1000":
+                    StartCoroutine(ShowTextHint("Incredible!", true));
+                    break;
+                case "1500":
+                    StartCoroutine(ShowTextHint("Unbelievable!", true));
+                    break;
+                case "2000":
+                    StartCoroutine(ShowTextHint("Spectacular!", true));
+                    break;
+                case "2500":
+                    StartCoroutine(ShowTextHint("I don't believe what I'm seeing!", true));
+                    break;
+                case "5000":
+                    StartCoroutine(ShowTextHint("Some say it's photoshopped, but I don't believe them!", true));
+                    break;
+                case "10000":
+                    StartCoroutine(ShowTextHint("Ok this is getting ridiculous now...", true));
+                    break;
+                case "20000":
+                    StartCoroutine(ShowTextHint("That's it, I'm off. This is too amazing to withstand.", true));
+                    break;
+            }
 
             if (!gameOver && currentLevel < 4 && boundaryScore > levelBoundaries[currentLevel]) IncrementLevel();
 
@@ -124,7 +162,25 @@ public class GameController : MonoBehaviour {
 
     private void SetLevels(bool slowDown)
     {
-        if(slowDown) scoreSpeed = 0.15f;
+        if (slowDown)
+        {
+            scoreSpeed = 0.15f;
+            if(lives == 2 && currentLevel < 2)
+            {
+                StartCoroutine(ShowTextHint("That's taken a bit of your speed away!", true));
+                for (int i = 0; i < 5; i++) levelBoundaries[i] += 15;
+            } else if (lives == 1 && currentLevel < 3)
+            {
+                StartCoroutine(ShowTextHint("We'll keep things a bit slower for you!", true));
+                for (int i = 0; i < 5; i++) levelBoundaries[i] += (25 * (4 - i));
+            } else
+            {
+                StartCoroutine(ShowTextHint("That'll slow you down a bit!", true));
+            }
+        } else
+        {
+            StartCoroutine(ShowTextHint(encouragements[UnityEngine.Random.Range(0, encouragements.Length)], true));
+        }
         scoreMaxIncrement = treeSpeedValues[currentLevel];
         boundaryScore = 0;
 
@@ -152,46 +208,37 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    public void GameOver()
-    {
-        gameOver = true;
-        foreach (TreeController tree in trees) tree.Stop();
-        spawner.Stop();
-        snowball.enabled = false;
-
-        StartCoroutine(ShowTextHint("Game Over", false));
-
-        restartButton.SetActive(true);
-    }
-
     private IEnumerator ShowTextHint(string message, bool fadeAway)
     {
         textHints.enabled = true;
         textHints.fontSize = 0;
         textHints.text = message;
-        textHints.color = new Color(1, 1, 1, 0);
+        textHints.color = new Color(0.4f, 0.73f, 1f, 0f);
 
         for (float t = 0; t < 1; t += Time.deltaTime / 0.25f)
         {
-            if (t <= 0.5f) textHints.color = new Color(1, 1, 1, t * 2);
-            textHints.fontSize = Mathf.RoundToInt(42f * t);
+            if (t <= 0.5f) textHints.color = new Color(0.4f, 0.73f, 1f, t * 2);
+            textHints.fontSize = Mathf.RoundToInt(34f * t);
             yield return null;
         }
 
-        textHints.fontSize = 42;
-        textHints.color = Color.white;
+        textHints.fontSize = 34;
+        textHints.color = new Color(0.4f, 0.73f, 1f, 1f);
 
         if (fadeAway)
         {
             yield return new WaitForSeconds(3.5f);
 
-            for (float t = 1; t > 0; t -= Time.deltaTime / 1f)
+            if (!gameOver)
             {
-                textHints.color = new Color(1, 1, 1, t);
-                yield return null;
-            }
+                for (float t = 1; t > 0; t -= Time.deltaTime / 1f)
+                {
+                    textHints.color = new Color(0.4f, 0.73f, 1f, t);
+                    yield return null;
+                }
 
-            textHints.enabled = false;
+                textHints.enabled = false;
+            }
         }
 
         yield return null;
@@ -240,6 +287,19 @@ public class GameController : MonoBehaviour {
 
         infoPanel.SetActive(false);
         yield return null;
+    }
+
+    public void GameOver()
+    {
+        gameOver = true;
+        foreach (TreeController tree in trees) tree.Stop();
+        spawner.Stop();
+        snowball.enabled = false;
+
+        this.StopAllCoroutines();
+        StartCoroutine(ShowTextHint("Game Over", false));
+
+        restartButton.SetActive(true);
     }
 
     public void GameStart()
@@ -322,6 +382,8 @@ public class GameController : MonoBehaviour {
     {
         lives = 3;
         currentLevel = -1;
+
+        for (int i = 0; i < originalBoundaries.Length; i++) levelBoundaries[i] = originalBoundaries[i];
 
         foreach (TreeController tree in trees.ToArray()) RemoveTree(tree);
 

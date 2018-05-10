@@ -600,7 +600,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 235}
+  m_AnchoredPosition: {x: 0, y: 230.6}
   m_SizeDelta: {x: 400, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &322070528
@@ -615,7 +615,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.4039216, g: 0.7254902, b: 0.9960785, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -624,10 +624,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 7aa9ac5e67a3dd44cb6c60ee5bb7530b, type: 3}
-    m_FontSize: 42
+    m_FontSize: 34
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 36
+    m_MinSize: 17
     m_MaxSize: 42
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -635,7 +635,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Well done!
+  m_Text: You're getting the hang of this! Let's speed up!
 --- !u!222 &322070529
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -680,11 +680,11 @@ MonoBehaviour:
   - 8
   - 10
   snowballSpeedValues:
+  - 6.5
+  - 5.5
   - 5
-  - 4.8
   - 4.5
-  - 4.1
-  - 3.6
+  - 4
   snowballAccelerationValues:
   - 1.05
   - 0.9
@@ -718,6 +718,12 @@ MonoBehaviour:
   restartButton: {fileID: 227835319}
   aboutButton: {fileID: 869857502}
   infoPanel: {fileID: 1714628862}
+  encouragements:
+  - Great job! The speed's ramping up!
+  - Yeah! Let's go faster!
+  - You're good at this! We'll speed up a bit!
+  - Let's get faster!
+  - You're getting the hang of this! Let's speed up!
 --- !u!4 &704081141
 Transform:
   m_ObjectHideFlags: 0
@@ -891,7 +897,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1198107211}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.87, y: -12, z: 0}
+  m_LocalPosition: {x: -8.87, y: -15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1304,7 +1310,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1492195736}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.87, y: -12, z: 0}
+  m_LocalPosition: {x: -8.87, y: -15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

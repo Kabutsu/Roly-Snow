@@ -20,7 +20,7 @@ public class TreeController : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        speed = maxSpeed;
+        speed = 0;
         controller = GameObject.Find("Game Controller").GetComponent<GameController>();
     }
 	
