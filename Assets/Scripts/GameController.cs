@@ -210,8 +210,8 @@ public class GameController : MonoBehaviour {
 
     private IEnumerator ShowTextHint(string message, bool fadeAway)
     {
-        textHints.enabled = true;
         textHints.fontSize = 0;
+        textHints.enabled = true;
         textHints.text = message;
         textHints.color = new Color(0.4f, 0.73f, 1f, 0f);
 
