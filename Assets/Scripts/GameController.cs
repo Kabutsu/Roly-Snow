@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour {
     public TreeSpawner spawner;
     public SnowballController snowball;
     public PathSpawner paths;
+    public VillageSpawner villages;
 
     [SerializeField]
     private int[] levelBoundaries = new int[5];
@@ -78,6 +79,8 @@ public class GameController : MonoBehaviour {
 	void Update () {
         if (!gameOver)
         {
+            if (Input.GetKeyDown(KeyCode.D)) villages.SpawnVillage();
+
             if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
 
             score += (scoreSpeed * Time.deltaTime);
