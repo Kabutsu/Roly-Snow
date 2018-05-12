@@ -79,8 +79,6 @@ public class GameController : MonoBehaviour {
 	void Update () {
         if (!gameOver)
         {
-            if (Input.GetKeyDown(KeyCode.D)) villages.SpawnVillage();
-
             if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
 
             score += (scoreSpeed * Time.deltaTime);

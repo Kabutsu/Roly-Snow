@@ -166,14 +166,14 @@ public class VillageSpawner : MonoBehaviour {
 
     private IEnumerator PlaceHouses(bool[,] houses)
     {
-        yield return new WaitForSeconds(1.25f);
+        yield return new WaitForSeconds(0.5f);
         
         for(int i = 0; i < houses.GetLength(0); i++)
         {
             float xShift = Random.Range(0, 3f * (horizontalMin / 4f));
             if (Random.Range(0, 2) == 0) xShift = 0 - xShift;
 
-            float yShift = Random.Range(0, verticalMin / 2f);
+            float yShift = Random.Range((verticalMin / 4f), 3f * (verticalMin / 4f));
 
             for (int j = 0; j < houses.GetLength(1); j++)
             {
