@@ -25,6 +25,7 @@ public class VillageSpawner : MonoBehaviour {
 
     private void Awake()
     {
+        //find out the size of the largest house, and so the minimum distance each house can be from each other
         foreach(GameObject house in housePrefabs)
         {
             if (house.GetComponent<SpriteRenderer>().bounds.size.x > horizontalMin)
@@ -37,22 +38,21 @@ public class VillageSpawner : MonoBehaviour {
         horizontalMin += 0.5f;
         verticalMin += 0.5f;
 
-        Debug.Log("horoMin:= " + horizontalMin + ", vertMin:= " + verticalMin);
-
+        //find boundaries of the screen
         float vertExtent = Camera.main.GetComponent<Camera>().orthographicSize;
         float horzExtent = vertExtent * Screen.width / Screen.height;
 
         screenMin = horzExtent - 35.275f / 2.0f;
         screenMax = 35.275f / 2.0f - horzExtent;
 
+        //find minimum & maximum placements of houses
         houseMin = screenMin + horizontalMin;
         houseMax = screenMax - horizontalMin;
-
-        Debug.Log("houseMin:= " + houseMin + ", houseMax:= " + houseMax);
 
         bool idealWidthFound = false;
         numberOfHousesAcross = 1;
 
+        //find how far apart each house should be to look pleasing
         do
         {
             idealWidthFound = (((houseMax + Mathf.Abs(houseMin)) / numberOfHousesAcross <= horizontalMin) ? true : false);
@@ -76,13 +76,15 @@ public class VillageSpawner : MonoBehaviour {
 
     public void SpawnVillage()
     {
-        trees.Stop();
+        trees.Stop(); //pause the spawning of trees
 
+        //randomise the height of the village
         villageHeight = Random.Range(4, 8);
         coordinates = new float[villageHeight, numberOfHousesAcross + 1];
         bool[,] houses = new bool[villageHeight, numberOfHousesAcross + 1];
         float[,] likelihood = new float[villageHeight, numberOfHousesAcross + 1];
         
+        //reset the arrays, which may have been used in an earlier village
         for (int i = 0; i < villageHeight; i++)
         {
             float currentHouseX = houseMin;
@@ -96,6 +98,7 @@ public class VillageSpawner : MonoBehaviour {
             }
         }
 
+        //randomly place the first few houses
         int numberOfStartingHouses = Random.Range(Mathf.RoundToInt(villageHeight / 4f) + 1, Mathf.RoundToInt(villageHeight / 4f) + 4);
 
         for (int i = 0; i < numberOfStartingHouses; i++)
@@ -113,7 +116,7 @@ public class VillageSpawner : MonoBehaviour {
         //iteravely generate where the houses are
         for(int pass = 0; pass < Random.Range(1, 5); pass++)
         {
-
+            //generate likelihoods: houses are 20% more likely to be above/below another house, and 10% more likely to be next to another house
             for (int i = 0; i < houses.GetLength(0); i++)
             {
                 for (int j = 0; j < houses.GetLength(1); j++)
@@ -129,6 +132,7 @@ public class VillageSpawner : MonoBehaviour {
                 }
             }
 
+            //using these probablilites, generate the next houses
             for (int i = 0; i < houses.GetLength(0); i++)
             {
                 for (int j = 0; j < houses.GetLength(1); j++)
@@ -156,6 +160,7 @@ public class VillageSpawner : MonoBehaviour {
         }
     }
 
+    //return the vertical distance between the last house placed and the spawner
     private float LastHouseDistance()
     {
         try
@@ -170,17 +175,21 @@ public class VillageSpawner : MonoBehaviour {
         }
     }
 
+    //physically place the houses
     private IEnumerator PlaceHouses(bool[,] houses)
     {
         yield return new WaitForSeconds(0.5f);
         
+        //for each row of houses...
         for(int i = 0; i < houses.GetLength(0); i++)
         {
+            //randomly shift the houses across and up a bit on each row to make it look a bit nicer
             float xShift = Random.Range(0, 3f * (horizontalMin / 4f));
             if (Random.Range(0, 2) == 0) xShift = 0 - xShift;
 
             float yShift = Random.Range((verticalMin / 4f), 3f * (verticalMin / 4f));
 
+            //add houses where they should be
             for (int j = 0; j < houses.GetLength(1); j++)
             {
                 if (houses[i, j] == true)
@@ -189,12 +198,13 @@ public class VillageSpawner : MonoBehaviour {
                 }
             }
 
+            //wait until the last house placed is appropriately far away
             yield return new WaitUntil(() => (LastHouseDistance() >= verticalMin - yShift || LastHouseDistance() == -1f));
         }
 
         yield return new WaitForSeconds(0.25f);
 
-        if(!controller.GameIsOver()) trees.Resume();
+        if(!controller.GameIsOver()) trees.Resume(); //resume spawning trees
     }
 
     public void Stop()
