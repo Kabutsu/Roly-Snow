@@ -600,7 +600,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 235}
+  m_AnchoredPosition: {x: 0, y: 230.6}
   m_SizeDelta: {x: 400, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &322070528
@@ -615,7 +615,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.4039216, g: 0.7254902, b: 0.9960785, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -624,10 +624,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 7aa9ac5e67a3dd44cb6c60ee5bb7530b, type: 3}
-    m_FontSize: 42
+    m_FontSize: 34
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 36
+    m_MinSize: 17
     m_MaxSize: 42
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -635,7 +635,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Well done!
+  m_Text: You're getting the hang of this! Let's speed up!
 --- !u!222 &322070529
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -672,6 +672,7 @@ MonoBehaviour:
   spawner: {fileID: 1492195737}
   snowball: {fileID: 1754525538}
   paths: {fileID: 1198107212}
+  villages: {fileID: 1135061796}
   levelBoundaries: 28000000320000003700000041000000a0860100
   treeSpeedValues:
   - 3.5
@@ -680,11 +681,11 @@ MonoBehaviour:
   - 8
   - 10
   snowballSpeedValues:
+  - 6.5
+  - 5.5
   - 5
-  - 4.8
   - 4.5
-  - 4.1
-  - 3.6
+  - 4
   snowballAccelerationValues:
   - 1.05
   - 0.9
@@ -703,6 +704,7 @@ MonoBehaviour:
   - 1.33
   - 1.5
   - 1.66
+  scoreSpeed: 0
   titleText: {fileID: 2004673051}
   scoreTitleText: {fileID: 1873402354}
   scoreText: {fileID: 1242927943}
@@ -718,6 +720,12 @@ MonoBehaviour:
   restartButton: {fileID: 227835319}
   aboutButton: {fileID: 869857502}
   infoPanel: {fileID: 1714628862}
+  encouragements:
+  - Great job! The speed's ramping up!
+  - Yeah! Let's go faster!
+  - You're good at this! We'll speed up a bit!
+  - Let's get faster!
+  - You're getting the hang of this! Let's speed up!
 --- !u!4 &704081141
 Transform:
   m_ObjectHideFlags: 0
@@ -729,7 +737,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &869857502
 GameObject:
@@ -852,6 +860,63 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 869857502}
+--- !u!1 &1135061795
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1135061797}
+  - component: {fileID: 1135061796}
+  m_Layer: 0
+  m_Name: Village Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1135061796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1135061795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84695904572e8354099549a4d2ac2d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 704081140}
+  trees: {fileID: 1492195737}
+  housePrefabs:
+  - {fileID: 1490793352424844, guid: 7597b1500e105564f8d1ebe7d8830796, type: 2}
+  - {fileID: 1411310353465486, guid: a5d23c69a018d16438a1af455283003b, type: 2}
+  - {fileID: 1219772306145236, guid: e81e2d68544116741a7049336dfdd0fc, type: 2}
+  - {fileID: 1478758663488064, guid: 81a2ab830f6e8ef4db1a64879ec32dae, type: 2}
+  - {fileID: 1900158162258166, guid: 8dda1db548e0a8c4f9cf41fe48be427a, type: 2}
+  - {fileID: 1775666535794784, guid: 1dbc26a7a3b7b824b98a3953b11ea154, type: 2}
+  - {fileID: 1876057842713308, guid: 24a9783ffc1e5b248ba226d7fa7e5b7a, type: 2}
+  - {fileID: 1990899456732492, guid: 2b9cd6494de0ad64a86974bf52eac7f5, type: 2}
+  - {fileID: 1851452576314640, guid: deb8ddb8ff5da6f4ba5a8fc24dd97bc8, type: 2}
+  - {fileID: 1304128676567896, guid: fe1b607a41ad50b43b2ec70a240fc380, type: 2}
+  - {fileID: 1119281180433924, guid: 62fac2eb035cfb94187b8eea3ebb80b2, type: 2}
+  - {fileID: 1464566747719892, guid: f4b8722738ebcb546b61068f8adc3c51, type: 2}
+  - {fileID: 1076263580477136, guid: 276f5014eb6065a41b9d2d267d86234f, type: 2}
+  - {fileID: 1215092352285002, guid: ef9ae2f79db3a75479613aabaf5bb7e4, type: 2}
+--- !u!4 &1135061797
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1135061795}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -8.87, y: -6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1198107211
 GameObject:
   m_ObjectHideFlags: 0
@@ -891,7 +956,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1198107211}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.87, y: -12, z: 0}
+  m_LocalPosition: {x: -8.87, y: -6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1152,7 +1217,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1428345185
 GameObject:
@@ -1193,7 +1258,7 @@ Transform:
   m_Children:
   - {fileID: 1962994296}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1435348881
 GameObject:
@@ -1266,7 +1331,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1492195736
 GameObject:
@@ -1297,6 +1362,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   treePrefab: {fileID: 1224990731593392, guid: c6d3e9682019bca4e8bbd430e3fa2e1a, type: 2}
   controller: {fileID: 704081140}
+  lastTreePlaced: {fileID: 0}
 --- !u!4 &1492195738
 Transform:
   m_ObjectHideFlags: 0
@@ -1304,7 +1370,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1492195736}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.87, y: -12, z: 0}
+  m_LocalPosition: {x: -8.87, y: -6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1745,7 +1811,7 @@ RectTransform:
   - {fileID: 42938806}
   - {fileID: 1714628863}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1859,7 +1925,7 @@ Transform:
   - {fileID: 201241271}
   - {fileID: 2715061}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1754525541
 Rigidbody2D:

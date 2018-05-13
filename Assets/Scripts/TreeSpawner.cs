@@ -24,7 +24,7 @@ public class TreeSpawner : MonoBehaviour {
 
     private bool paused = false;
 
-    private GameObject lastTreePlaced;
+    public GameObject lastTreePlaced;
 
     private void Awake()
     {
@@ -121,23 +121,27 @@ public class TreeSpawner : MonoBehaviour {
 
         foreach (Dictionary<float, float> pathValue in pathValues)
         {
-            float distanceFromLeft = pathValue.Keys.ToArray().First();
-            float width = pathValue.Values.ToArray().First();
+            if (!controller.GameIsOver())
+            {
+                float distanceFromLeft = pathValue.Keys.ToArray().First();
+                float width = pathValue.Values.ToArray().First();
 
-            float horoTreeSplit = Random.Range(0.3f, 0.5f);
-            float vertTreeSplit = Random.Range(0.55f, 0.65f);
+                float horoTreeSplit = Random.Range(0.3f, 0.5f);
+                float vertTreeSplit = Random.Range(0.55f, 0.65f);
 
-            for (float i = screenMin; i <= (screenMin + distanceFromLeft); i += horoTreeSplit)
-                AddTree(i);
+                for (float i = screenMin; i <= (screenMin + distanceFromLeft); i += horoTreeSplit)
+                    AddTree(i);
 
-            for (float i = (screenMin + distanceFromLeft + width); i <= screenMax + horoTreeSplit; i += horoTreeSplit)
-                AddTree(i);
-
-            yield return new WaitUntil(() => LastTreeDistance() >= vertTreeSplit);
+                for (float i = (screenMin + distanceFromLeft + width); i <= screenMax + horoTreeSplit; i += horoTreeSplit)
+                    AddTree(i);
+                
+                yield return new WaitUntil(() => LastTreeDistance() >= vertTreeSplit);
+            }
         }
 
         yield return new WaitForSeconds(1f);
-        Resume();
+
+        if(!controller.GameIsOver()) Resume();
     }
 
     private float LastTreeDistance()
