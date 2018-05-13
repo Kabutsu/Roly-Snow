@@ -16,11 +16,6 @@ public class SnowballController : MonoBehaviour {
 
     public GameObject leftArrow;
     public GameObject rightArrow;
-
-    public GameObject snowflake;
-    private const int MIN_SNOWFLAKES = 4;
-    private const int MAX_SNOWFLAKES = 8;
-    private float previousVelocity = 0f;
     
     // Use this for initialization
     void Start () {
@@ -66,16 +61,6 @@ public class SnowballController : MonoBehaviour {
                 velocity = ( ((velocity + acceleration / momentum) > 0) ? 0 : (velocity + acceleration / momentum));
             }
         }
-
-        if(previousVelocity > 0 && velocity < 0)
-        {
-            
-        } else if (previousVelocity < 0 && velocity > 0)
-        {
-            
-        }
-
-        previousVelocity = velocity;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -140,24 +125,4 @@ public class SnowballController : MonoBehaviour {
 
         yield return null;
     }
-
-    //private IEnumerator BrushSnow(float leftmostStart, float rightmostStart, float minAngle, float maxAngle)
-    //{
-    //    int noSnowflakes = Random.Range(MIN_SNOWFLAKES, MAX_SNOWFLAKES + 1);
-
-    //    for(int i = 0; i < noSnowflakes; i++)
-    //    {
-    //        GameObject newSnowflake = Instantiate(snowflake, new Vector3(Random.Range(gameObject.transform.position.x + leftmostStart, gameObject.transform.position.x + rightmostStart), gameObject.transform.position.y), gameObject.transform.rotation);
-    //        float scale = Random.Range(0.33f, 1f);
-    //        newSnowflake.transform.localScale = new Vector3(scale, scale);
-    //        float angle = Random.Range(minAngle, maxAngle);
-    //        StartCoroutine(MoveSnow(angle, 1.33f - scale));
-    //        yield return null;
-    //    }
-    //}
-
-    //private IEnumerator MoveSnow(float angle, float lifetime)
-    //{
-
-    //}
 }
