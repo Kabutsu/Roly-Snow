@@ -21,6 +21,8 @@ public class VillageSpawner : MonoBehaviour {
     private float houseMin;
     private float houseMax;
 
+    bool stopped = false;
+
     private void Awake()
     {
         foreach(GameObject house in housePrefabs)
@@ -91,8 +93,6 @@ public class VillageSpawner : MonoBehaviour {
 
                 houses[i, j] = false;
                 likelihood[i, j] = 0f;
-
-                Debug.Log("coordinates[" + i + "," + j + "]:= " + coordinates[i, j]);
             }
         }
 
@@ -148,9 +148,12 @@ public class VillageSpawner : MonoBehaviour {
 
     private void AddHouse(float xPos)
     {
-        GameObject newHouse = Instantiate(housePrefabs[Random.Range(0, housePrefabs.Length)], new Vector3(xPos, gameObject.transform.position.y), gameObject.transform.rotation);
-        controller.AddTree(newHouse.GetComponent<TreeController>());
-        lastHousePlaced = newHouse;
+        if (!stopped)
+        {
+            GameObject newHouse = Instantiate(housePrefabs[Random.Range(0, housePrefabs.Length)], new Vector3(xPos, gameObject.transform.position.y), gameObject.transform.rotation);
+            controller.AddTree(newHouse.GetComponent<TreeController>());
+            lastHousePlaced = newHouse;
+        }
     }
 
     private float LastHouseDistance()
@@ -159,6 +162,9 @@ public class VillageSpawner : MonoBehaviour {
         {
             return lastHousePlaced.transform.position.y - gameObject.transform.position.y;
         } catch (System.NullReferenceException)
+        {
+            return -1f;
+        } catch (MissingReferenceException)
         {
             return -1f;
         }
@@ -188,6 +194,16 @@ public class VillageSpawner : MonoBehaviour {
 
         yield return new WaitForSeconds(0.25f);
 
-        trees.Resume();
+        if(!controller.GameIsOver()) trees.Resume();
+    }
+
+    public void Stop()
+    {
+        stopped = true;
+    }
+
+    public void Resume()
+    {
+        stopped = false;
     }
 }

@@ -50,9 +50,12 @@ public class TreeSpawner : MonoBehaviour {
 
     private void AddTree(float xPos)
     {
-        GameObject newTree = Instantiate(treePrefab, new Vector3(xPos, trans.position.y), trans.rotation);
-        controller.AddTree(newTree.GetComponent<TreeController>());
-        lastTreePlaced = newTree;
+        if (!paused)
+        {
+            GameObject newTree = Instantiate(treePrefab, new Vector3(xPos, trans.position.y), trans.rotation);
+            controller.AddTree(newTree.GetComponent<TreeController>());
+            lastTreePlaced = newTree;
+        }
     }
 
     private void SpawnTrees()
@@ -137,7 +140,8 @@ public class TreeSpawner : MonoBehaviour {
         }
 
         yield return new WaitForSeconds(1f);
-        Resume();
+
+        if(!controller.GameIsOver()) Resume();
     }
 
     private float LastTreeDistance()

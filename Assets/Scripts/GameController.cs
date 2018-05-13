@@ -79,6 +79,9 @@ public class GameController : MonoBehaviour {
 	void Update () {
         if (!gameOver)
         {
+            if (Input.GetKeyDown(KeyCode.D)) villages.SpawnVillage();
+            if (Input.GetKeyDown(KeyCode.E)) paths.SpawnPath();
+
             if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
 
             score += (scoreSpeed * Time.deltaTime);
@@ -290,11 +293,17 @@ public class GameController : MonoBehaviour {
         yield return null;
     }
 
+    public bool GameIsOver()
+    {
+        return gameOver;
+    }
+
     public void GameOver()
     {
         gameOver = true;
-        foreach (TreeController tree in trees) tree.Stop();
         spawner.Stop();
+        villages.Stop();
+        foreach (TreeController tree in trees) tree.Stop();
         snowball.enabled = false;
 
         this.StopAllCoroutines();
@@ -396,6 +405,8 @@ public class GameController : MonoBehaviour {
         scoreText.text = "0";
         score = 0;
         boundaryScore = 0;
+        scoreSpeed = 0f;
+        acceleration = 0.025f;
         IncrementLevel();
 
         scoreText.enabled = false;
