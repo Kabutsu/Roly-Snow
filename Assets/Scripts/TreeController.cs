@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class TreeController : MonoBehaviour {
 
-    private float speed = 0f;
+    public float speed = 0f;
     private float maxSpeed = 2.5f;
-    private float acceleration = 0.1f;
+    private float acceleration = 0.2f;
 
     private float screenHeight;
     private GameController controller;
+    private TreeSpawner spawner;
 
     private void Awake()
     {
@@ -20,13 +21,18 @@ public class TreeController : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        speed = 0;
         controller = GameObject.Find("Game Controller").GetComponent<GameController>();
+        spawner = GameObject.Find("Tree Spawner").GetComponent<TreeSpawner>();
+        speed = maxSpeed;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        if(speed < maxSpeed) speed += acceleration;
+        if (speed < maxSpeed)
+        {
+            speed += acceleration;
+        }
+        else if (speed > maxSpeed) speed = maxSpeed;
 
         float moveAmount = speed * Time.deltaTime;
         gameObject.transform.Translate(new Vector3(0, moveAmount));

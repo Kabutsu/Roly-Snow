@@ -704,6 +704,7 @@ MonoBehaviour:
   - 1.33
   - 1.5
   - 1.66
+  scoreSpeed: 0
   titleText: {fileID: 2004673051}
   scoreTitleText: {fileID: 1873402354}
   scoreText: {fileID: 1242927943}
@@ -910,7 +911,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1135061795}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.87, y: -15, z: 0}
+  m_LocalPosition: {x: -8.87, y: -6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -955,7 +956,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1198107211}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.87, y: -15, z: 0}
+  m_LocalPosition: {x: -8.87, y: -6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1361,6 +1362,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   treePrefab: {fileID: 1224990731593392, guid: c6d3e9682019bca4e8bbd430e3fa2e1a, type: 2}
   controller: {fileID: 704081140}
+  lastTreePlaced: {fileID: 0}
 --- !u!4 &1492195738
 Transform:
   m_ObjectHideFlags: 0
@@ -1368,7 +1370,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1492195736}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.87, y: -15, z: 0}
+  m_LocalPosition: {x: -8.87, y: -6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

@@ -178,11 +178,13 @@ public class VillageSpawner : MonoBehaviour {
     //physically place the houses
     private IEnumerator PlaceHouses(bool[,] houses)
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.25f);
         
         //for each row of houses...
         for(int i = 0; i < houses.GetLength(0); i++)
         {
+            trees.Stop(); //just making sure
+
             //randomly shift the houses across and up a bit on each row to make it look a bit nicer
             float xShift = Random.Range(0, 3f * (horizontalMin / 4f));
             if (Random.Range(0, 2) == 0) xShift = 0 - xShift;
@@ -192,17 +194,21 @@ public class VillageSpawner : MonoBehaviour {
             //add houses where they should be
             for (int j = 0; j < houses.GetLength(1); j++)
             {
+                if (stopped) break;
+
                 if (houses[i, j] == true)
                 {
                     AddHouse(coordinates[i, j] + xShift);
                 }
             }
 
+            if (stopped) break;
+
             //wait until the last house placed is appropriately far away
-            yield return new WaitUntil(() => (LastHouseDistance() >= verticalMin - yShift || LastHouseDistance() == -1f));
+            yield return new WaitUntil(() => (LastHouseDistance() >= verticalMin + yShift || LastHouseDistance() == -1f || stopped == true));
         }
 
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.5f);
 
         if(!controller.GameIsOver()) trees.Resume(); //resume spawning trees
     }

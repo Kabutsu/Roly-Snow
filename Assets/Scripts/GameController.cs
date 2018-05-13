@@ -30,8 +30,8 @@ public class GameController : MonoBehaviour {
 
     private float score = 0;
     private float boundaryScore = 0;
-    private float scoreSpeed = 0f;
-    private float acceleration = 0.025f;
+    public float scoreSpeed = 0f;
+    private float acceleration = 0.2f;
     private float scoreMaxIncrement;
 
     public UnityEngine.UI.Text titleText;
@@ -84,7 +84,10 @@ public class GameController : MonoBehaviour {
 
             if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
 
-            score += (scoreSpeed * Time.deltaTime);
+            foreach(TreeController tree in trees)
+                tree.SetMaxSpeed(scoreSpeed);
+            
+            score += ((scoreSpeed/2f) * Time.deltaTime);
             boundaryScore += (scoreSpeed * Time.deltaTime);
 
             switch (scoreText.text)
@@ -126,15 +129,8 @@ public class GameController : MonoBehaviour {
 
     public void AddTree(TreeController tree)
     {
-        try
-        {
-            tree.SetMaxSpeed(treeSpeedValues[currentLevel]);
-            trees.Add(tree);
-        } catch (IndexOutOfRangeException)
-        {
-            trees.Add(tree);
-            GameOver();
-        }
+        tree.SetMaxSpeed(scoreSpeed);
+        trees.Add(tree);
     }
 
     public void RemoveTree(TreeController tree)
@@ -155,7 +151,7 @@ public class GameController : MonoBehaviour {
         lives--;
         if (lives >= 0 && lives <= 2) heartImages[lives].sprite = heartImageTypes[1];
 
-        if (lives == 0)
+        if (lives <= 0)
         {
             GameOver();
         } else
@@ -420,6 +416,8 @@ public class GameController : MonoBehaviour {
 
         snowball.enabled = false;
         spawner.enabled = false;
+
+        villages.Resume();
 
         StartCoroutine(RestartAnimation(snowball.gameObject));
     }

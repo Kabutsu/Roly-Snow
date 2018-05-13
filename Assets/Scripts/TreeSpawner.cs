@@ -24,7 +24,7 @@ public class TreeSpawner : MonoBehaviour {
 
     private bool paused = false;
 
-    private GameObject lastTreePlaced;
+    public GameObject lastTreePlaced;
 
     private void Awake()
     {
@@ -134,7 +134,7 @@ public class TreeSpawner : MonoBehaviour {
 
                 for (float i = (screenMin + distanceFromLeft + width); i <= screenMax + horoTreeSplit; i += horoTreeSplit)
                     AddTree(i);
-
+                
                 yield return new WaitUntil(() => LastTreeDistance() >= vertTreeSplit);
             }
         }
