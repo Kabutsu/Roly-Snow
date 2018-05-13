@@ -103,6 +103,11 @@ public class TreeSpawner : MonoBehaviour {
         paused = true;
     }
 
+    public bool Stopped()
+    {
+        return paused;
+    }
+
     public void Resume()
     {
         paused = false;
@@ -141,7 +146,7 @@ public class TreeSpawner : MonoBehaviour {
 
         yield return new WaitForSeconds(1f);
 
-        if(!controller.GameIsOver()) Resume();
+        if (!controller.GameIsOver()) controller.StateComplete();
     }
 
     private float LastTreeDistance()

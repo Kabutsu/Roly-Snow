@@ -53,6 +53,11 @@ public class GameController : MonoBehaviour {
 
     public string[] encouragements;
 
+    private string currentState = "L";
+    private bool stateComplete = false;
+    private float timeInTrees = 0;
+    private int lengthOfTrees;
+
     private int lives = 3;
     private bool gameOver = false;
 
@@ -79,10 +84,7 @@ public class GameController : MonoBehaviour {
 	void Update () {
         if (!gameOver)
         {
-            if (Input.GetKeyDown(KeyCode.D)) villages.SpawnVillage();
-            if (Input.GetKeyDown(KeyCode.E)) paths.SpawnPath();
-
-            if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
+             if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
 
             foreach(TreeController tree in trees)
                 tree.SetMaxSpeed(scoreSpeed);
@@ -124,7 +126,132 @@ public class GameController : MonoBehaviour {
             if (!gameOver && currentLevel < 4 && boundaryScore > levelBoundaries[currentLevel]) IncrementLevel();
 
             scoreText.text = Mathf.RoundToInt(score).ToString();
+
+            //Use a generative grammar to negotiate a finite-state automata that generates level patterns
+            //L:  (T|P1L1|V1L2)L
+            //L1: V2L2|
+            //L2: P2L1|
+            switch (currentState)
+            {
+                case "L":
+                    int nextStateChance = UnityEngine.Random.Range(0, 100);
+
+                    if(nextStateChance < 25)
+                    {
+                        currentState = "P1";
+                        stateComplete = false;
+                        paths.SpawnPath();
+                    } else if (nextStateChance < 50)
+                    {
+                        currentState = "V1";
+                        stateComplete = false;
+                        villages.SpawnVillage();
+                    } else
+                    {
+                        currentState = "T";
+                        if(spawner.Stopped()) spawner.Resume();
+                        timeInTrees = 0f;
+                        lengthOfTrees = UnityEngine.Random.Range(25, 50);
+                    }
+
+                    break;
+                case "T":
+                    if (timeInTrees >= lengthOfTrees)
+                    {
+                        currentState = "L";
+                    }
+                    else
+                    {
+                        timeInTrees += (scoreSpeed / 2f) * Time.deltaTime;
+                    }
+
+                    break;
+                case "P1":
+                    if(stateComplete)
+                    {
+                        float nextStateChanceL1 = UnityEngine.Random.Range(0f, 1f);
+                        if(nextStateChanceL1 < 1/3)
+                        {
+                            currentState = "V2";
+                            stateComplete = false;
+                            villages.SpawnVillage();
+                        } else
+                        {
+                            currentState = "T";
+                            spawner.Resume();
+                            timeInTrees = 0f;
+                            lengthOfTrees = UnityEngine.Random.Range(25, 75);
+                        }
+                    }
+
+                    break;
+                case "P2":
+                    if (stateComplete)
+                    {
+                        float nextStateChanceL1 = UnityEngine.Random.Range(0f, 1f);
+                        if (nextStateChanceL1 < 1 / 6)
+                        {
+                            currentState = "V2";
+                            stateComplete = false;
+                            villages.SpawnVillage();
+                        }
+                        else
+                        {
+                            currentState = "T";
+                            spawner.Resume();
+                            timeInTrees = 0f;
+                            lengthOfTrees = UnityEngine.Random.Range(25, 75);
+                        }
+                    }
+
+                    break;
+                case "V1":
+                    if (stateComplete)
+                    {
+                        float nextStateChanceL1 = UnityEngine.Random.Range(0f, 1f);
+                        if (nextStateChanceL1 < 1 / 3)
+                        {
+                            currentState = "P2";
+                            stateComplete = false;
+                            villages.SpawnVillage();
+                        }
+                        else
+                        {
+                            currentState = "T";
+                            spawner.Resume();
+                            timeInTrees = 0f;
+                            lengthOfTrees = UnityEngine.Random.Range(25, 75);
+                        }
+                    }
+
+                    break;
+                case "V2":
+                    if (stateComplete)
+                    {
+                        float nextStateChanceL1 = UnityEngine.Random.Range(0f, 1f);
+                        if (nextStateChanceL1 < 1 / 6)
+                        {
+                            currentState = "P2";
+                            stateComplete = false;
+                            villages.SpawnVillage();
+                        }
+                        else
+                        {
+                            currentState = "T";
+                            spawner.Resume();
+                            timeInTrees = 0f;
+                            lengthOfTrees = UnityEngine.Random.Range(25, 75);
+                        }
+                    }
+
+                    break;
+            }
         }
+    }
+
+    public void StateComplete()
+    {
+        stateComplete = true;
     }
 
     public void AddTree(TreeController tree)
@@ -418,6 +545,7 @@ public class GameController : MonoBehaviour {
         spawner.enabled = false;
 
         villages.Resume();
+        currentState = "L";
 
         StartCoroutine(RestartAnimation(snowball.gameObject));
     }
