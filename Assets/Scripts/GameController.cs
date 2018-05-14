@@ -575,6 +575,7 @@ public class GameController : MonoBehaviour {
 
         lives = 3;
         currentLevel = -1;
+        spawner.ResetSpawnRate();
 
         for (int i = 0; i < originalBoundaries.Length; i++) levelBoundaries[i] = originalBoundaries[i];
 

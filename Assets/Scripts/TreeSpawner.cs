@@ -87,6 +87,12 @@ public class TreeSpawner : MonoBehaviour {
         maxFrequency += 0.1f;
     }
 
+    public void ResetSpawnRate()
+    {
+        maxSpawnRate = 1;
+        maxFrequency = 1f;
+    }
+
     public void Stop()
     {
         paused = true;
