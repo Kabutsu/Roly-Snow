@@ -37,6 +37,8 @@ public class TreeController : MonoBehaviour {
         float moveAmount = speed * Time.deltaTime;
         gameObject.transform.Translate(new Vector3(0, moveAmount));
 
+        screenHeight -= (speed * Time.deltaTime);
+
         if (gameObject.transform.position.y > screenHeight) controller.RemoveTree(this);
     }
 

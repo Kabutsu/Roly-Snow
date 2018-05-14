@@ -111,6 +111,10 @@ public class SnowballController : MonoBehaviour {
         }
 
         gameObject.transform.position = new Vector3(gameObject.transform.position.x, 2f);
+
+        GetComponent<TrailRenderer>().enabled = true;
+        controller.StartTrail();
+
         yield return new WaitForSeconds(0.25f);
 
         for (float t = 1; t>0; t-= Time.deltaTime / 0.5f)
