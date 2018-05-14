@@ -51,6 +51,10 @@ public class GameController : MonoBehaviour {
     public GameObject infoPanel;
     private bool infoOpen = false;
 
+    public AudioClip buttonClickSound;
+    public AudioClip hitSound;
+    public AudioClip gameOverSound;
+
     public string[] encouragements;
 
     private string currentState = "L";
@@ -284,6 +288,7 @@ public class GameController : MonoBehaviour {
             GameOver();
         } else
         {
+            Camera.main.GetComponent<AudioSource>().PlayOneShot(hitSound);
             SetLevels(true);
         }
     }
@@ -376,6 +381,8 @@ public class GameController : MonoBehaviour {
     {
         if(!infoOpen)
         {
+            Camera.main.GetComponent<AudioSource>().PlayOneShot(buttonClickSound);
+
             infoOpen = true;
             StartCoroutine(OpenAboutMenu());
         }
@@ -385,6 +392,8 @@ public class GameController : MonoBehaviour {
     {
         if(infoOpen)
         {
+            Camera.main.GetComponent<AudioSource>().PlayOneShot(buttonClickSound);
+
             infoOpen = false;
             StartCoroutine(CloseAboutMenu());
         }
@@ -424,6 +433,8 @@ public class GameController : MonoBehaviour {
 
     public void GameOver()
     {
+        Camera.main.GetComponent<AudioSource>().PlayOneShot(gameOverSound);
+
         gameOver = true;
         spawner.Stop();
         villages.Stop();
@@ -431,6 +442,7 @@ public class GameController : MonoBehaviour {
         snowball.enabled = false;
 
         this.StopAllCoroutines();
+        snowball.GetComponent<AudioSource>().enabled = false;
         StartCoroutine(ShowTextHint("Game Over", false));
 
         restartButton.SetActive(true);
@@ -438,8 +450,12 @@ public class GameController : MonoBehaviour {
 
     public void GameStart()
     {
+        Camera.main.GetComponent<AudioSource>().PlayOneShot(buttonClickSound);
+
         GameObject snowballObj = snowball.gameObject;
         snowballObj.GetComponent<SpriteRenderer>().enabled = true;
+        snowball.GetComponent<AudioSource>().volume = 0;
+        snowball.GetComponent<AudioSource>().enabled = true;
         if (infoOpen) CloseAbout();
         StartCoroutine(StartAnimation(snowballObj));
     }
@@ -456,8 +472,11 @@ public class GameController : MonoBehaviour {
             snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
             startButtonImg.color = new Color(1, 1, 1, 1-t);
             aboutButtonImg.color = new Color(1, 1, 1, 1-t);
+            snowball.GetComponent<AudioSource>().volume = t;
             yield return null;
         }
+
+        snowball.GetComponent<AudioSource>().volume = 1;
 
         titleText.enabled = false;
         startButton.SetActive(false);
@@ -514,6 +533,8 @@ public class GameController : MonoBehaviour {
 
     public void RestartGame()
     {
+        Camera.main.GetComponent<AudioSource>().PlayOneShot(buttonClickSound);
+
         lives = 3;
         currentLevel = -1;
 
@@ -530,7 +551,7 @@ public class GameController : MonoBehaviour {
         score = 0;
         boundaryScore = 0;
         scoreSpeed = 0f;
-        acceleration = 0.025f;
+        acceleration = 0.2f;
         IncrementLevel();
 
         scoreText.enabled = false;
@@ -545,7 +566,11 @@ public class GameController : MonoBehaviour {
         snowball.enabled = false;
         spawner.enabled = false;
 
+        snowball.GetComponent<AudioSource>().volume = 0;
+        snowball.GetComponent<AudioSource>().enabled = true;
+
         villages.Resume();
+        stateComplete = false;
         currentState = "L";
 
         StartCoroutine(RestartAnimation(snowball.gameObject));
@@ -557,8 +582,11 @@ public class GameController : MonoBehaviour {
         {
             snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
             snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
+            snowball.GetComponent<AudioSource>().volume = t;
             yield return null;
         }
+
+        snowball.GetComponent<AudioSource>().volume = 1;
 
         scoreTitleText.enabled = true;
         scoreTitleText.color = new Color(0, 0, 0, 0);

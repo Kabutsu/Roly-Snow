@@ -23,6 +23,7 @@ public class TreeSpawner : MonoBehaviour {
     public GameController controller;
 
     private bool paused = false;
+    private bool pathPlacing = false;
 
     public GameObject lastTreePlaced;
 
@@ -64,26 +65,13 @@ public class TreeSpawner : MonoBehaviour {
 
         for (i = 0; i <= treesSpawned; i++)
         {
-            if (!paused)
+            if (!paused && !pathPlacing)
             {
                 AddTree(Random.Range(screenMin, screenMax));
             }
         }
 
-        if(!paused) Invoke("SpawnTrees", delay);
-    }
-
-    public void PauseTreesSpawningFor(float seconds)
-    {
-        paused = true;
-        StartCoroutine(Resume(seconds));
-    }
-
-    private IEnumerator Resume(float inSeconds)
-    {
-        yield return new WaitForSeconds(inSeconds);
-
-        SpawnTrees();
+        if (!paused) Invoke("SpawnTrees", delay);
     }
 
     public void IncreaseSpawnRate()
@@ -122,6 +110,8 @@ public class TreeSpawner : MonoBehaviour {
 
     private IEnumerator PlacePath(List<Dictionary<float, float>> pathValues)
     {
+        pathPlacing = true;
+
         yield return new WaitForSeconds(1.5f);
 
         foreach (Dictionary<float, float> pathValue in pathValues)
@@ -139,18 +129,31 @@ public class TreeSpawner : MonoBehaviour {
 
                 for (float i = (screenMin + distanceFromLeft + width); i <= screenMax + horoTreeSplit; i += horoTreeSplit)
                     AddTree(i);
-                
-                yield return new WaitUntil(() => LastTreeDistance() >= vertTreeSplit);
+
+                yield return new WaitUntil(() => (LastTreeDistance() >= vertTreeSplit || LastTreeDistance() == -1f));
             }
+            else break;
         }
 
-        yield return new WaitForSeconds(1f);
+        if (!controller.GameIsOver())
+        {
+            yield return new WaitForSeconds(1f);
+            
+            if (!controller.GameIsOver()) controller.StateComplete();
+        }
+        else yield return null;
 
-        if (!controller.GameIsOver()) controller.StateComplete();
+        pathPlacing = false;
     }
 
     private float LastTreeDistance()
     {
-        return lastTreePlaced.transform.position.y - gameObject.transform.position.y;
+        try
+        {
+            return lastTreePlaced.transform.position.y - gameObject.transform.position.y;
+        } catch (MissingReferenceException)
+        {
+            return -1f;
+        }
     }
 }
