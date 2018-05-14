@@ -68,7 +68,7 @@ public class TreeSpawner : MonoBehaviour {
         {
             if (!paused && !pathPlacing)
             {
-                AddTree(Random.Range(screenMin, screenMax), Random.Range(0.7f, 1.15f));
+                AddTree(Random.Range(screenMin, screenMax), Random.Range(0.8f, 1.15f));
             }
         }
 
