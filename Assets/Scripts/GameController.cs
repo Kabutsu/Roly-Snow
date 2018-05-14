@@ -62,6 +62,8 @@ public class GameController : MonoBehaviour {
     private float timeInTrees = 0;
     private int lengthOfTrees;
 
+    private bool trailRendering = false;
+
     private int lives = 3;
     private bool gameOver = false;
 
@@ -93,13 +95,13 @@ public class GameController : MonoBehaviour {
 
         if (!gameOver)
         {
-             if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
+            if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
 
             foreach(TreeController tree in trees)
                 tree.SetMaxSpeed(scoreSpeed);
             
             score += ((scoreSpeed/2f) * Time.deltaTime);
-            boundaryScore += (scoreSpeed * Time.deltaTime);
+            boundaryScore += ((scoreSpeed/2f) * Time.deltaTime);
 
             switch (scoreText.text)
             {
@@ -256,12 +258,34 @@ public class GameController : MonoBehaviour {
 
                     break;
             }
+
+            if(trailRendering)
+            {
+                Vector3 moveDown = new Vector3(0f, -(scoreSpeed * Time.deltaTime));
+
+                spawner.transform.Translate(moveDown);
+                villages.transform.Translate(moveDown);
+                paths.transform.Translate(moveDown);
+                Camera.main.transform.Translate(moveDown);
+                snowball.gameObject.transform.Translate(moveDown);
+                foreach (TreeController tree in trees) tree.gameObject.transform.Translate(moveDown);
+            }
         }
     }
 
     public void StateComplete()
     {
         stateComplete = true;
+    }
+
+    public void StartTrail()
+    {
+        trailRendering = true;
+    }
+
+    public void EndTrail()
+    {
+        trailRendering = false;
     }
 
     public void AddTree(TreeController tree)
@@ -331,7 +355,11 @@ public class GameController : MonoBehaviour {
         snowball.SetMaxSpeed(snowballSpeedValues[currentLevel]);
         snowball.SetAcceleration(snowballAccelerationValues[currentLevel]);
         snowball.SetMomentum(snowballMomentumValues[currentLevel]);
-        if(!gameOver) snowball.SetSize(snowballSizeValues[currentLevel]);
+        if (!gameOver)
+        {
+            snowball.SetSize(snowballSizeValues[currentLevel]);
+            snowball.GetComponent<TrailRenderer>().widthMultiplier = snowballSizeValues[currentLevel];
+        }
 
         if (currentLevel < 2)
         {
@@ -440,6 +468,8 @@ public class GameController : MonoBehaviour {
     {
         Camera.main.GetComponent<AudioSource>().PlayOneShot(gameOverSound);
 
+        EndTrail();
+
         gameOver = true;
         spawner.Stop();
         villages.Stop();
@@ -541,12 +571,18 @@ public class GameController : MonoBehaviour {
     {
         Camera.main.GetComponent<AudioSource>().PlayOneShot(buttonClickSound);
 
+        snowball.GetComponent<TrailRenderer>().enabled = false;
+
         lives = 3;
         currentLevel = -1;
 
         for (int i = 0; i < originalBoundaries.Length; i++) levelBoundaries[i] = originalBoundaries[i];
 
         foreach (TreeController tree in trees.ToArray()) RemoveTree(tree);
+
+        spawner.transform.position = new Vector3(-8.87f, -6f, 0f);
+        villages.transform.position = new Vector3(-8.87f, -6f, 0f);
+        paths.transform.position = new Vector3(-8.87f, -6f, 0f);
 
         Camera.main.transform.position = new Vector3(0, 10, -10);
         snowball.transform.position = new Vector3(-3.9f, 13.17f, 0f);
