@@ -17,12 +17,18 @@ public class SnowballController : MonoBehaviour {
     public GameObject leftArrow;
     public GameObject rightArrow;
 
-    //public ParticleSystem particle;
-    
+    private GameObject trailObject;
+
+    private void Awake()
+    {
+        trailObject = GameObject.Find("Trail");
+    }
+
     // Use this for initialization
     void Start () {
         StartCoroutine(MoveDownScreen());
-	}
+        //trailObject.transform.localPosition = new Vector3(0f, gameObject.GetComponent<SpriteRenderer>().bounds.size.y / 2f, 1f);
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -98,9 +104,11 @@ public class SnowballController : MonoBehaviour {
         {
             float scaleNow = Mathf.Lerp(from, to, t);
             gameObject.transform.localScale = new Vector3(scaleNow, scaleNow);
+            //trailObject.transform.localPosition = new Vector3(0f, gameObject.GetComponent<SpriteRenderer>().bounds.size.y / 2f, 1f);
             yield return null;
         }
 
+        //trailObject.transform.localPosition = new Vector3(0f, gameObject.GetComponent<SpriteRenderer>().bounds.size.y / 2f, 1f);
         gameObject.transform.localScale = new Vector3(to, to);
         yield return null;
     }
@@ -110,13 +118,13 @@ public class SnowballController : MonoBehaviour {
         velocity = 0f;
         for (float t = 0; t<1; t+= Time.deltaTime / 1.75f)
         {
-            gameObject.transform.position = new Vector3(gameObject.transform.position.x, Mathf.Lerp(4.05f, 2f, t));
+            gameObject.transform.position = new Vector3(gameObject.transform.position.x, Mathf.Lerp(4.05f, 2f, t), -2f);
             yield return null;
         }
 
-        gameObject.transform.position = new Vector3(gameObject.transform.position.x, 2f);
+        gameObject.transform.position = new Vector3(gameObject.transform.position.x, 2f, -2f);
 
-        GetComponent<TrailRenderer>().enabled = true;
+        GetComponentInChildren<TrailRenderer>().enabled = true;
         controller.StartTrail();
 
         yield return new WaitForSeconds(0.25f);

@@ -261,7 +261,7 @@ public class GameController : MonoBehaviour {
 
             if(trailRendering)
             {
-                Vector3 moveDown = new Vector3(0f, -(scoreSpeed * Time.deltaTime));
+                Vector3 moveDown = new Vector3(0f, -(scoreSpeed * Time.deltaTime), 0f);
 
                 spawner.transform.Translate(moveDown);
                 villages.transform.Translate(moveDown);
@@ -358,7 +358,7 @@ public class GameController : MonoBehaviour {
         if (!gameOver)
         {
             snowball.SetSize(snowballSizeValues[currentLevel]);
-            snowball.GetComponent<TrailRenderer>().widthMultiplier = snowballSizeValues[currentLevel];
+            snowball.gameObject.GetComponentInChildren<TrailRenderer>().widthMultiplier = snowballSizeValues[currentLevel];
         }
 
         if (currentLevel < 2)
@@ -504,7 +504,7 @@ public class GameController : MonoBehaviour {
         for (float t = 0; t < 1; t += Time.deltaTime / 2f)
         {
             titleText.color = new Color(1, 1, 1, 1 - t);
-            snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
+            snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t), -2f);
             snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
             startButtonImg.color = new Color(1, 1, 1, 1-t);
             aboutButtonImg.color = new Color(1, 1, 1, 1-t);
@@ -546,7 +546,7 @@ public class GameController : MonoBehaviour {
             scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);
             foreach (UnityEngine.UI.Image heart in heartImages) heart.color = new Color(0, 0, 0, t);
             mainCamera.transform.position = new Vector3(0, Mathf.Lerp(10f, 0f, t), -10);
-            snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t));
+            snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t), -2f);
             if(t <= (1f/3f))
             {
                 leftArrow.color = new Color(0.82f, 0.82f, 0.82f, t * 3f);
@@ -571,7 +571,7 @@ public class GameController : MonoBehaviour {
     {
         Camera.main.GetComponent<AudioSource>().PlayOneShot(buttonClickSound);
 
-        snowball.GetComponent<TrailRenderer>().enabled = false;
+        snowball.gameObject.GetComponentInChildren<TrailRenderer>().enabled = false;
 
         lives = 3;
         currentLevel = -1;
@@ -622,7 +622,7 @@ public class GameController : MonoBehaviour {
     {
         for (float t = 0; t < 1; t += Time.deltaTime / 1.5f)
         {
-            snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
+            snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t), -2f);
             snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
             snowball.GetComponent<AudioSource>().volume = t;
             yield return null;
@@ -658,7 +658,7 @@ public class GameController : MonoBehaviour {
             scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);
             foreach (UnityEngine.UI.Image heart in heartImages) heart.color = new Color(0, 0, 0, t);
             mainCamera.transform.position = new Vector3(0, Mathf.Lerp(10f, 0f, t), -10);
-            snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t));
+            snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t), -2f);
             if (t <= (1f / 3f))
             {
                 leftArrow.color = new Color(0.82f, 0.82f, 0.82f, t * 3f);
