@@ -16,6 +16,8 @@ public class SnowballController : MonoBehaviour {
 
     public GameObject leftArrow;
     public GameObject rightArrow;
+
+    //public ParticleSystem particle;
     
     // Use this for initialization
     void Start () {
@@ -24,6 +26,8 @@ public class SnowballController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        //particle.startSpeed = scoreSpeed*2;
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             if(velocity > 0 - maxSpeed)

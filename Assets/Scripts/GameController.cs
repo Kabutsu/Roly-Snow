@@ -61,6 +61,8 @@ public class GameController : MonoBehaviour {
     private int lives = 3;
     private bool gameOver = false;
 
+    public ParticleSystem particle;
+
     // Use this for initialization
     void Start () {
         originalBoundaries = new int[levelBoundaries.Length];
@@ -82,6 +84,9 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        particle.startSpeed = scoreSpeed * 2;
+
         if (!gameOver)
         {
              if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
@@ -429,6 +434,7 @@ public class GameController : MonoBehaviour {
         villages.Stop();
         foreach (TreeController tree in trees) tree.Stop();
         snowball.enabled = false;
+        scoreSpeed = 0;
 
         this.StopAllCoroutines();
         StartCoroutine(ShowTextHint("Game Over", false));
