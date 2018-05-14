@@ -279,7 +279,7 @@ public class GameController : MonoBehaviour {
 
     public void PlayerHitTree()
     {
-        currentLevel = (currentLevel == 0 ? currentLevel : currentLevel--);
+        currentLevel = (currentLevel == 0 ? currentLevel : currentLevel - 1);
         lives--;
         if (lives >= 0 && lives <= 2) heartImages[lives].sprite = heartImageTypes[1];
 

@@ -200,6 +200,7 @@ public class VillageSpawner : MonoBehaviour {
                 {
                     AddHouse(coordinates[i, j] + xShift);
                 }
+                if (Random.Range(0f, 1f) < 0.25f) trees.AddTree(Random.Range(houseMin, houseMax), Random.Range(0.6f, 1.1f));
             }
 
             if (stopped) break;
