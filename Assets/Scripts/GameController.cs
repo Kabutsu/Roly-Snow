@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameController : MonoBehaviour {
+public class GameController : MonoBehaviour
+{
 
     private List<TreeController> trees;
     public TreeSpawner spawner;
@@ -25,7 +26,7 @@ public class GameController : MonoBehaviour {
     private float[] snowballSizeValues = new float[5];
 
     private int[] originalBoundaries;
-    
+
     private int currentLevel = -1;
 
     private float score = 0;
@@ -57,7 +58,8 @@ public class GameController : MonoBehaviour {
     private bool gameOver = false;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         originalBoundaries = new int[levelBoundaries.Length];
         for (int i = 0; i < levelBoundaries.Length; i++) originalBoundaries[i] = levelBoundaries[i];
 
@@ -73,10 +75,13 @@ public class GameController : MonoBehaviour {
 
         restartButton.SetActive(false);
         infoPanel.SetActive(false);
+
+        InvokeRepeating("Biome", 15, 15);
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         if (!gameOver)
         {
             if (Input.GetKeyDown(KeyCode.D)) villages.SpawnVillage();
@@ -84,10 +89,10 @@ public class GameController : MonoBehaviour {
 
             if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
 
-            foreach(TreeController tree in trees)
+            foreach (TreeController tree in trees)
                 tree.SetMaxSpeed(scoreSpeed);
-            
-            score += ((scoreSpeed/2f) * Time.deltaTime);
+
+            score += ((scoreSpeed / 2f) * Time.deltaTime);
             boundaryScore += (scoreSpeed * Time.deltaTime);
 
             switch (scoreText.text)
@@ -127,6 +132,19 @@ public class GameController : MonoBehaviour {
         }
     }
 
+    public void Biome()
+    {
+        float random = UnityEngine.Random.Range(0f, 3);
+        if (random >= 2f)
+        {
+            villages.SpawnVillage();
+        }
+        if (random <= 1f)
+        {
+            paths.SpawnPath();
+        }
+    }
+
     public void AddTree(TreeController tree)
     {
         tree.SetMaxSpeed(scoreSpeed);
@@ -154,7 +172,8 @@ public class GameController : MonoBehaviour {
         if (lives <= 0)
         {
             GameOver();
-        } else
+        }
+        else
         {
             SetLevels(true);
         }
@@ -165,19 +184,22 @@ public class GameController : MonoBehaviour {
         if (slowDown)
         {
             scoreSpeed = 0.15f;
-            if(lives == 2 && currentLevel < 2)
+            if (lives == 2 && currentLevel < 2)
             {
                 StartCoroutine(ShowTextHint("That's taken a bit of your speed away!", true));
                 for (int i = 0; i < 5; i++) levelBoundaries[i] += 15;
-            } else if (lives == 1 && currentLevel < 3)
+            }
+            else if (lives == 1 && currentLevel < 3)
             {
                 StartCoroutine(ShowTextHint("We'll keep things a bit slower for you!", true));
                 for (int i = 0; i < 5; i++) levelBoundaries[i] += (25 * (4 - i));
-            } else
+            }
+            else
             {
                 StartCoroutine(ShowTextHint("That'll slow you down a bit!", true));
             }
-        } else
+        }
+        else
         {
             StartCoroutine(ShowTextHint(encouragements[UnityEngine.Random.Range(0, encouragements.Length)], true));
         }
@@ -187,13 +209,13 @@ public class GameController : MonoBehaviour {
         foreach (TreeController tree in trees)
         {
             tree.SetMaxSpeed(treeSpeedValues[currentLevel]);
-            if(slowDown) tree.SlowDown();
+            if (slowDown) tree.SlowDown();
         }
 
         snowball.SetMaxSpeed(snowballSpeedValues[currentLevel]);
         snowball.SetAcceleration(snowballAccelerationValues[currentLevel]);
         snowball.SetMomentum(snowballMomentumValues[currentLevel]);
-        if(!gameOver) snowball.SetSize(snowballSizeValues[currentLevel]);
+        if (!gameOver) snowball.SetSize(snowballSizeValues[currentLevel]);
 
         if (currentLevel < 2)
         {
@@ -246,7 +268,7 @@ public class GameController : MonoBehaviour {
 
     public void OpenAbout()
     {
-        if(!infoOpen)
+        if (!infoOpen)
         {
             infoOpen = true;
             StartCoroutine(OpenAboutMenu());
@@ -255,7 +277,7 @@ public class GameController : MonoBehaviour {
 
     public void CloseAbout()
     {
-        if(infoOpen)
+        if (infoOpen)
         {
             infoOpen = false;
             StartCoroutine(CloseAboutMenu());
@@ -268,7 +290,7 @@ public class GameController : MonoBehaviour {
         RectTransform infoBox = infoPanel.GetComponent<RectTransform>();
         infoBox.localScale = new Vector3(0, 0);
 
-        for(float t = 0; t <= 1; t += Time.deltaTime / 0.3f)
+        for (float t = 0; t <= 1; t += Time.deltaTime / 0.3f)
         {
             infoBox.localScale = new Vector3(t * 0.8f, t * 0.2f);
             yield return null;
@@ -326,8 +348,8 @@ public class GameController : MonoBehaviour {
             titleText.color = new Color(1, 1, 1, 1 - t);
             snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
             snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
-            startButtonImg.color = new Color(1, 1, 1, 1-t);
-            aboutButtonImg.color = new Color(1, 1, 1, 1-t);
+            startButtonImg.color = new Color(1, 1, 1, 1 - t);
+            aboutButtonImg.color = new Color(1, 1, 1, 1 - t);
             yield return null;
         }
 
@@ -340,7 +362,7 @@ public class GameController : MonoBehaviour {
         scoreText.enabled = true;
         scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, 0);
 
-        foreach(UnityEngine.UI.Image heart in heartImages)
+        foreach (UnityEngine.UI.Image heart in heartImages)
         {
             heart.enabled = true;
             heart.color = new Color(0, 0, 0, 0);
@@ -357,14 +379,14 @@ public class GameController : MonoBehaviour {
 
         yield return null;
 
-        for(float t = 0; t < 1; t += Time.deltaTime / 1.5f)
+        for (float t = 0; t < 1; t += Time.deltaTime / 1.5f)
         {
             scoreTitleText.color = new Color(0, 0, 0, t);
             scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);
             foreach (UnityEngine.UI.Image heart in heartImages) heart.color = new Color(0, 0, 0, t);
             mainCamera.transform.position = new Vector3(0, Mathf.Lerp(10f, 0f, t), -10);
             snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t));
-            if(t <= (1f/3f))
+            if (t <= (1f / 3f))
             {
                 leftArrow.color = new Color(0.82f, 0.82f, 0.82f, t * 3f);
                 rightArrow.color = new Color(0.82f, 0.82f, 0.82f, t * 3f);
@@ -408,7 +430,7 @@ public class GameController : MonoBehaviour {
         scoreText.enabled = false;
         scoreTitleText.enabled = false;
         textHints.enabled = false;
-        foreach(UnityEngine.UI.Image heart in heartImages)
+        foreach (UnityEngine.UI.Image heart in heartImages)
         {
             heart.sprite = heartImageTypes[0];
             heart.enabled = false;
@@ -436,7 +458,7 @@ public class GameController : MonoBehaviour {
         scoreText.enabled = true;
         scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, 0);
 
-        foreach(UnityEngine.UI.Image heart in heartImages)
+        foreach (UnityEngine.UI.Image heart in heartImages)
         {
             heart.enabled = true;
             heart.color = new Color(0, 0, 0, 0);
