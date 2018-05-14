@@ -189,7 +189,7 @@ public class VillageSpawner : MonoBehaviour {
             float xShift = Random.Range(0, 3f * (horizontalMin / 4f));
             if (Random.Range(0, 2) == 0) xShift = 0 - xShift;
 
-            float yShift = Random.Range((verticalMin / 4f), 3f * (verticalMin / 4f));
+            float yShift = Random.Range(0, verticalMin / 2f);
 
             //add houses where they should be
             for (int j = 0; j < houses.GetLength(1); j++)
@@ -210,7 +210,7 @@ public class VillageSpawner : MonoBehaviour {
 
         yield return new WaitForSeconds(0.5f);
 
-        if(!controller.GameIsOver()) trees.Resume(); //resume spawning trees
+        if (!controller.GameIsOver()) controller.StateComplete();
     }
 
     public void Stop()
