@@ -129,8 +129,9 @@ public class GameController : MonoBehaviour {
 
             //Use a generative grammar to negotiate a finite-state automata that generates level patterns
             //L:  (T|P1L1|V1L2)L
-            //L1: V2L2|
-            //L2: P2L1|
+            //L1: V2L2|_
+            //L2: P2L1|_
+            //So paths can never follow paths and villages can never follow villages, but random trees are the most likely thing
             switch (currentState)
             {
                 case "L":
