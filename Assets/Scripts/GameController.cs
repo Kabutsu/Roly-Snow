@@ -51,6 +51,10 @@ public class GameController : MonoBehaviour {
     public GameObject infoPanel;
     private bool infoOpen = false;
 
+    public AudioClip buttonClickSound;
+    public AudioClip hitSound;
+    public AudioClip gameOverSound;
+
     public string[] encouragements;
 
     private string currentState = "L";
@@ -58,8 +62,12 @@ public class GameController : MonoBehaviour {
     private float timeInTrees = 0;
     private int lengthOfTrees;
 
+    private bool trailRendering = false;
+
     private int lives = 3;
     private bool gameOver = false;
+
+    public ParticleSystem particle;
 
     // Use this for initialization
     void Start () {
@@ -82,15 +90,18 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        particle.startSpeed = scoreSpeed * 2;
+
         if (!gameOver)
         {
-             if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
+            if (scoreSpeed < scoreMaxIncrement) scoreSpeed += acceleration;
 
             foreach(TreeController tree in trees)
                 tree.SetMaxSpeed(scoreSpeed);
             
             score += ((scoreSpeed/2f) * Time.deltaTime);
-            boundaryScore += (scoreSpeed * Time.deltaTime);
+            boundaryScore += ((scoreSpeed/2f) * Time.deltaTime);
 
             switch (scoreText.text)
             {
@@ -247,12 +258,34 @@ public class GameController : MonoBehaviour {
 
                     break;
             }
+
+            if(trailRendering)
+            {
+                Vector3 moveDown = new Vector3(0f, -(scoreSpeed * Time.deltaTime), 0f);
+
+                spawner.transform.Translate(moveDown);
+                villages.transform.Translate(moveDown);
+                paths.transform.Translate(moveDown);
+                Camera.main.transform.Translate(moveDown);
+                snowball.gameObject.transform.Translate(moveDown);
+                foreach (TreeController tree in trees) tree.gameObject.transform.Translate(moveDown);
+            }
         }
     }
 
     public void StateComplete()
     {
         stateComplete = true;
+    }
+
+    public void StartTrail()
+    {
+        trailRendering = true;
+    }
+
+    public void EndTrail()
+    {
+        trailRendering = false;
     }
 
     public void AddTree(TreeController tree)
@@ -275,7 +308,7 @@ public class GameController : MonoBehaviour {
 
     public void PlayerHitTree()
     {
-        currentLevel = (currentLevel == 0 ? currentLevel : currentLevel--);
+        currentLevel = (currentLevel == 0 ? currentLevel : currentLevel - 1);
         lives--;
         if (lives >= 0 && lives <= 2) heartImages[lives].sprite = heartImageTypes[1];
 
@@ -284,6 +317,7 @@ public class GameController : MonoBehaviour {
             GameOver();
         } else
         {
+            Camera.main.GetComponent<AudioSource>().PlayOneShot(hitSound);
             SetLevels(true);
         }
     }
@@ -321,7 +355,11 @@ public class GameController : MonoBehaviour {
         snowball.SetMaxSpeed(snowballSpeedValues[currentLevel]);
         snowball.SetAcceleration(snowballAccelerationValues[currentLevel]);
         snowball.SetMomentum(snowballMomentumValues[currentLevel]);
-        if(!gameOver) snowball.SetSize(snowballSizeValues[currentLevel]);
+        if (!gameOver)
+        {
+            snowball.SetSize(snowballSizeValues[currentLevel]);
+            snowball.gameObject.GetComponentInChildren<TrailRenderer>().widthMultiplier = snowballSizeValues[currentLevel];
+        }
 
         if (currentLevel < 2)
         {
@@ -376,6 +414,8 @@ public class GameController : MonoBehaviour {
     {
         if(!infoOpen)
         {
+            Camera.main.GetComponent<AudioSource>().PlayOneShot(buttonClickSound);
+
             infoOpen = true;
             StartCoroutine(OpenAboutMenu());
         }
@@ -385,6 +425,8 @@ public class GameController : MonoBehaviour {
     {
         if(infoOpen)
         {
+            Camera.main.GetComponent<AudioSource>().PlayOneShot(buttonClickSound);
+
             infoOpen = false;
             StartCoroutine(CloseAboutMenu());
         }
@@ -424,13 +466,19 @@ public class GameController : MonoBehaviour {
 
     public void GameOver()
     {
+        Camera.main.GetComponent<AudioSource>().PlayOneShot(gameOverSound);
+
+        EndTrail();
+
         gameOver = true;
         spawner.Stop();
         villages.Stop();
         foreach (TreeController tree in trees) tree.Stop();
         snowball.enabled = false;
+        scoreSpeed = 0;
 
         this.StopAllCoroutines();
+        snowball.GetComponent<AudioSource>().enabled = false;
         StartCoroutine(ShowTextHint("Game Over", false));
 
         restartButton.SetActive(true);
@@ -438,8 +486,12 @@ public class GameController : MonoBehaviour {
 
     public void GameStart()
     {
+        Camera.main.GetComponent<AudioSource>().PlayOneShot(buttonClickSound);
+
         GameObject snowballObj = snowball.gameObject;
         snowballObj.GetComponent<SpriteRenderer>().enabled = true;
+        snowball.GetComponent<AudioSource>().volume = 0;
+        snowball.GetComponent<AudioSource>().enabled = true;
         if (infoOpen) CloseAbout();
         StartCoroutine(StartAnimation(snowballObj));
     }
@@ -452,12 +504,15 @@ public class GameController : MonoBehaviour {
         for (float t = 0; t < 1; t += Time.deltaTime / 2f)
         {
             titleText.color = new Color(1, 1, 1, 1 - t);
-            snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
+            snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t), -2f);
             snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
             startButtonImg.color = new Color(1, 1, 1, 1-t);
             aboutButtonImg.color = new Color(1, 1, 1, 1-t);
+            snowball.GetComponent<AudioSource>().volume = t;
             yield return null;
         }
+
+        snowball.GetComponent<AudioSource>().volume = 1;
 
         titleText.enabled = false;
         startButton.SetActive(false);
@@ -491,7 +546,7 @@ public class GameController : MonoBehaviour {
             scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);
             foreach (UnityEngine.UI.Image heart in heartImages) heart.color = new Color(0, 0, 0, t);
             mainCamera.transform.position = new Vector3(0, Mathf.Lerp(10f, 0f, t), -10);
-            snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t));
+            snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t), -2f);
             if(t <= (1f/3f))
             {
                 leftArrow.color = new Color(0.82f, 0.82f, 0.82f, t * 3f);
@@ -514,12 +569,20 @@ public class GameController : MonoBehaviour {
 
     public void RestartGame()
     {
+        Camera.main.GetComponent<AudioSource>().PlayOneShot(buttonClickSound);
+
+        snowball.gameObject.GetComponentInChildren<TrailRenderer>().enabled = false;
+
         lives = 3;
         currentLevel = -1;
 
         for (int i = 0; i < originalBoundaries.Length; i++) levelBoundaries[i] = originalBoundaries[i];
 
         foreach (TreeController tree in trees.ToArray()) RemoveTree(tree);
+
+        spawner.transform.position = new Vector3(-8.87f, -6f, 0f);
+        villages.transform.position = new Vector3(-8.87f, -6f, 0f);
+        paths.transform.position = new Vector3(-8.87f, -6f, 0f);
 
         Camera.main.transform.position = new Vector3(0, 10, -10);
         snowball.transform.position = new Vector3(-3.9f, 13.17f, 0f);
@@ -530,7 +593,7 @@ public class GameController : MonoBehaviour {
         score = 0;
         boundaryScore = 0;
         scoreSpeed = 0f;
-        acceleration = 0.025f;
+        acceleration = 0.2f;
         IncrementLevel();
 
         scoreText.enabled = false;
@@ -545,7 +608,11 @@ public class GameController : MonoBehaviour {
         snowball.enabled = false;
         spawner.enabled = false;
 
+        snowball.GetComponent<AudioSource>().volume = 0;
+        snowball.GetComponent<AudioSource>().enabled = true;
+
         villages.Resume();
+        stateComplete = false;
         currentState = "L";
 
         StartCoroutine(RestartAnimation(snowball.gameObject));
@@ -555,10 +622,13 @@ public class GameController : MonoBehaviour {
     {
         for (float t = 0; t < 1; t += Time.deltaTime / 1.5f)
         {
-            snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t));
+            snowballObj.transform.position = new Vector3(Mathf.Lerp(-3.9f, 0f, t), Mathf.Lerp(13.17f, 7f, t), -2f);
             snowballObj.transform.localScale = new Vector3(Mathf.Lerp(0.25f, 1f, t), Mathf.Lerp(0.25f, 1f, t));
+            snowball.GetComponent<AudioSource>().volume = t;
             yield return null;
         }
+
+        snowball.GetComponent<AudioSource>().volume = 1;
 
         scoreTitleText.enabled = true;
         scoreTitleText.color = new Color(0, 0, 0, 0);
@@ -588,7 +658,7 @@ public class GameController : MonoBehaviour {
             scoreText.color = new Color(scoreText.color.r, scoreText.color.g, scoreText.color.b, t);
             foreach (UnityEngine.UI.Image heart in heartImages) heart.color = new Color(0, 0, 0, t);
             mainCamera.transform.position = new Vector3(0, Mathf.Lerp(10f, 0f, t), -10);
-            snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t));
+            snowballObj.transform.position = new Vector3(0, Mathf.Lerp(7f, 4.05f, t), -2f);
             if (t <= (1f / 3f))
             {
                 leftArrow.color = new Color(0.82f, 0.82f, 0.82f, t * 3f);
